@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+help () {
+	echo -e "\nThis is a wrapper for the Yocto build device agent"
+	echo -e "usage: $0 -f env_config_file -p 5555 \n";
+	echo "Options:"
+	echo -e "-f cross-compiler environment configuration file"
+	echo -e "-s port build agent is listening on"
+	echo -e "-h show this help menu"
+	exit 1;
+}
+
+EXEC=turff
+
+while getopts ":hs:f:" opt; do
+	case $opt in
+		f)
+			env_conf_file=$OPTARG
+			;;
+		s)
+			port=$OPTARG
+			TURFF_PORT="-s $port"
+			;;
+		h)
+			help
+			exit 1
+			;;
+		\?)
+			echo "Invalid option: -$OPTARG"
+			exit 1
+			;;
+		:)
+			echo "Option -$OPTARG requires an argument."
+			exit 1
+			;;
+	esac
+done
+
+
+if [[ -x "$env_conf_file" ]] ; then
+	source $env_conf_file
+	$EXEC $TURFF_PORT
+else
+	if [[ -f "$env_conf_file" ]] ; then
+		echo "File '$env_conf_file' is not executable"
+	else
+		echo "Environment configuration file not found"
+	fi
+fi

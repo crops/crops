@@ -1,0 +1,10 @@
+* rewrite eclipse plugin for all platforms Windows, Linux, Mac
+* create Docker image installers for Windows/Linux/Mac
+* create container launchers
+* document installation/configuration/usage
+* document APIs
+* implement bitbake operations
+* fix all bugs.. :)
+
+
+
