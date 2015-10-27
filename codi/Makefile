@@ -1,7 +1,7 @@
 CFLAGS=-g -I. -I../
-LDFLAGS=-lm
-DEPS = codi.h codi_list.h ../globals.h ../utils.h
-OBJ = codi.o codi_list.o codi_api.o ../utils.o ../globals.o
+LDFLAGS=-lsqlite3 -lm
+DEPS = codi.h codi_db.h codi_list.h ../globals.h ../utils.h
+OBJ = codi.o codi_db.o codi_list.o codi_api.o ../utils.o ../globals.o
 
 all: codi
 

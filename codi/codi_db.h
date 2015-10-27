@@ -14,10 +14,9 @@
  * more details.
  */
 
-#ifndef CODI_H
-#define CODI_H
+#ifndef CODI_DB_H
+#define CODI_DB_H
 
-void add_turff_node(char *ip, char *port, char *hostname);
-void return_turff_nodes();
+#define CODI_DB      "codi.db"
 
 #endif

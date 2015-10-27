@@ -18,9 +18,10 @@
 #define CODI_LIST_H
 
 typedef struct list_node{
+  char *id;
   char *ip;
   char *port;
-  char *id;
+  char *date;
   struct list_node *next;
 } turff_node;
 

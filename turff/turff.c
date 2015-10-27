@@ -79,41 +79,48 @@ int main(int argc, char *argv[]) {
     /* receive parameters from CODI */
     receive_args(ceed_sock_fd, codi_params);
 
-    /* save stdout and stderr file descriptors */
-    dup2(2, saved_err);
-    dup2(1, saved_out);
+    if (!strcmp(CODI_NAME, codi_params[KEY('z')])) {
+      /* save stdout and stderr file descriptors */
+      dup2(2, saved_err);
+      dup2(1, saved_out);
 
-    /* redirect stdout & stderr to ceed socket */
-    dup2(ceed_sock_fd, 2);
-    dup2(ceed_sock_fd, 1);
+      /* redirect stdout & stderr to ceed socket */
+      dup2(ceed_sock_fd, 2);
+      dup2(ceed_sock_fd, 1);
 
-    /* make sure ceed and turff APIs match*/
-    if (!strcmp(turff_ops[KEY('v')], codi_params[KEY('v')])) {
-      /* process ceed requests */
-      if (process_params(codi_params))
-        ERROR("ERROR processing ceed request\n");
-    } else {
+      /* make sure ceed and turff APIs match*/
+      if (!strcmp(turff_ops[KEY('v')], codi_params[KEY('v')])) {
+        /* process ceed requests */
+        if (process_params(codi_params))
+          ERROR("ERROR processing ceed request\n");
+      } else {
         INFO("Incompatible versions: TURFF[%s] - CODI[%s]\n",
-          turff_ops[KEY('v')], codi_params[KEY('v')]);
-    }
-
-    /* delay EOM - send as separate buffer */
-    usleep(500000);
-    send_data(ceed_sock_fd, TURFF_EOM, sizeof(TURFF_EOM));
-
-    /* restore stdout and stderr */
-    dup2(saved_err, 2);
-    dup2(saved_out, 1);
-
-    /* clear parameters and wait for a new service request */
-    for (i = 0; i< KEY_ARR_SZ; i++){
-      if (codi_params[i] != NULL) {
-#ifdef DBG
-        DEBUG("Received parameter [%c] : %s\n", i+'a', codi_params[i] );
-#endif
-        free(codi_params[i]);
-        codi_params[i] = NULL ;
+        turff_ops[KEY('v')], codi_params[KEY('v')]);
       }
+
+      /* delay EOM - send as separate buffer */
+      usleep(500000);
+      send_data(ceed_sock_fd, TURFF_EOM, sizeof(TURFF_EOM));
+
+      /* restore stdout and stderr */
+      dup2(saved_err, 2);
+      dup2(saved_out, 1);
+
+      /* clear parameters and wait for a new service request */
+      for (i = 0; i< KEY_ARR_SZ; i++){
+        if (codi_params[i] != NULL) {
+#ifdef DBG
+          DEBUG("Received parameter [%c] : %s\n", i+'a', codi_params[i] );
+#endif
+          free(codi_params[i]);
+          codi_params[i] = NULL ;
+        }
+      }
+    } else {
+      /* ceed connected to turff directly. send it EOM*/
+      INFO("Request did not originate from CODI!\n");
+      codi_params[KEY('e')] = "set";
+      send_args(ceed_sock_fd, codi_params);
     }
     close(ceed_sock_fd);
   }

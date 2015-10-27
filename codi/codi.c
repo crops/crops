@@ -76,14 +76,13 @@ int main(int argc, char *argv[]) {
       cli_ip = (struct sockaddr_in*) &cli_addr;
       asprintf(&ip, "%s", inet_ntoa(cli_ip->sin_addr));
       cli_params[KEY('c')] = ip;
-      add_turff_node(cli_params[KEY('c')],  cli_params[KEY('s')],  cli_params[KEY('n')]);
+      db_insert_node(cli_params[KEY('n')], cli_params[KEY('c')],  cli_params[KEY('s')], "some date");
     } else if (!strcmp(cli_params[KEY('z')], CEED_NAME) && (cli_params[KEY('l')] != NULL )) {
       /* ceed request for available toolchains */
       return_turff_nodes(cli_sock_fd);
     } else if (!strcmp(cli_params[KEY('z')], CEED_NAME) && (cli_params[KEY('d')] != NULL )) {
       /* must be a command from ceed*/
       /* TODO - check if toolchain is up and try to start it if it is not*/
-      /* TODO - forward parameters to turff*/
       req_node = find_turff_node(cli_params[KEY('d')]);
       if(req_node != NULL) {
 
@@ -95,11 +94,14 @@ int main(int argc, char *argv[]) {
         } else {
           INFO("Connected to node id: %s ip: %s port: %s\n",
           req_node->id, req_node->ip, req_node->port);
+
+          /* change the source signature of the param array */
+          asprintf(&(cli_params[KEY('z')]), "%s", CODI_NAME);
+
+          /* forward parameters to turff */
+          send_args(node_sock_fd, cli_params);
+          redirect_sockets(node_sock_fd, cli_sock_fd);
         }
-
-        send_args(node_sock_fd, cli_params);
-        redirect_sockets(node_sock_fd, cli_sock_fd);
-
       } else {
         INFO("Container id: %s not found in CODI's table\n", cli_params[KEY('d')]);
       }
@@ -118,4 +120,3 @@ int main(int argc, char *argv[]) {
     close(cli_sock_fd);
   }
 }
-

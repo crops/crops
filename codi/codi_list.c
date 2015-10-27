@@ -23,46 +23,60 @@
 
 turff_node *head = NULL;
 
-turff_node *find_turff_node(char *id) {
+turff_node *find_turff_node(char *id)
+{
+
+  /* clear the list and read the nodes from the db*/
+  get_db_nodes(id);
   turff_node *cur = head;
 
   while (cur != NULL) {
-    if(!strcmp(cur->id, id)) {
+    if(!strcmp(cur->id, id))
       return cur;
-    } else {
+    else
       cur = cur->next;
-    }
   }
   return NULL;
 }
 
-void add_turff_node(char *ip, char *port, char *hostname) {
-  int node_exists = 0;
-  turff_node *node;
-  node = find_turff_node(hostname);
+void free_turff_nodes_list()
+{
+  turff_node *tmp = NULL;
 
-  /* if a node with this port is alredy in the list just update it */
-  if ( node == NULL) {
-    node = calloc(1, sizeof(turff_node));
-  } else {
-    node_exists = 1;
-  }
-
-  asprintf(&(node->ip), "%s", ip);
-  asprintf(&(node->port), "%s",  port);
-  asprintf(&(node->id), "%s", hostname);
-
-  if(!node_exists) {
-    node->next = head;
-    head = node;
+  while (head != NULL) {
+    free(head->id);
+    free(head->ip);
+    free(head->port);
+    free(head->date);
+    tmp = head ;
+    head = head->next;
+    free(tmp);
   }
 }
 
+void add_turff_node(char *id, char *ip, char *port, char *date)
+{
+  int node_exists = 0;
+  turff_node *node;
 
-/* TODO - we will be sending these to ceed*/
-void return_turff_nodes(int sock_fd) {
+  node = calloc(1, sizeof(turff_node));
+  asprintf(&(node->id), "%s", id);
+  asprintf(&(node->ip), "%s", ip);
+  asprintf(&(node->port), "%s",  port);
+  asprintf(&(node->date), "%s",  date);
+  node->next = head;
+  head = node;
+}
+
+
+/* send these to ceed*/
+void return_turff_nodes(int sock_fd)
+{
   int i;
   char *tmp_node[KEY_ARR_SZ];
+
+  /* clear the list and read the nodes from the db*/
+  get_db_nodes(NULL);
   turff_node *cur = head;
 
   for (i = 0; i <  KEY_ARR_SZ; i++)
