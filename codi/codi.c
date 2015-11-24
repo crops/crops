@@ -22,6 +22,7 @@
 #include "globals.h"
 #include "codi.h"
 #include "codi_list.h"
+#include "codi_launcher.h"
 
 static int codi_sock_fd;
 
@@ -34,7 +35,6 @@ void close_sockets(int dummy) {
 
 
 int main(int argc, char *argv[]) {
-
   struct addrinfo *addr_p;
   struct sockaddr cli_addr;
   struct sockaddr_in *cli_ip;
@@ -71,8 +71,8 @@ int main(int argc, char *argv[]) {
 
     receive_args(cli_sock_fd, cli_params);
 
+    /* registration from turff */
     if(!strcmp(cli_params[KEY('z')], TURFF_NAME)) {
-      /* registration from turff */
       cli_ip = (struct sockaddr_in*) &cli_addr;
       asprintf(&ip, "%s", inet_ntoa(cli_ip->sin_addr));
       cli_params[KEY('c')] = ip;

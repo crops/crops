@@ -47,11 +47,18 @@ void error(const char *file, int line, const char *func, const char* fmt, ...);
 #define ERROR(...) error(__FILE__, __LINE__, __func__, __VA_ARGS__)
 #define DEBUG(...) debug(__FILE__, __LINE__, __func__, __VA_ARGS__)
 
+typedef enum { false, true } bool;
+
 /* parameter chunk*/
 typedef struct chunk{
   uint32_t op_code;
   char arg[20];
   struct chunk *next;
 } msg_chunk;
+
+typedef struct{
+  char  *mem;
+  size_t size;
+} curl_mem_chunk_t;
 
 #endif
