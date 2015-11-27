@@ -49,8 +49,8 @@ int main(int argc, char *argv[]) {
     while(!done) {
       bzero(ceed_out, BUFSIZ);
       receive_data(sock_fd, ceed_out, BUFSIZ, 1, &done);
-      free(ceed_out);
     }
+    free(ceed_out);
 
     INFO(" ==========  CEED OUTPUT END  ==========\n");
   } else { /* this was nodes request, receive turff nodes */

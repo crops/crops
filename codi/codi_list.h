@@ -26,5 +26,8 @@ typedef struct list_node{
 } turff_node;
 
 turff_node *find_turff_node(char *id);
+void add_turff_node(char *id, char *ip, char *port, char *date);
+void return_turff_nodes();
+void free_turff_nodes_list();
 
 #endif

@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <sys/select.h>
 #include "globals.h"
+#include "utils.h"
 
 
 /* TODO - add error checks and return error codes*/
@@ -57,9 +58,10 @@ int redirect_sockets(int in_sock, int out_sock) {
       }
     }
   } else if (ready < 0){
+    free(buf);
     ERROR("Select error\n");
   }
-
+  free(buf);
   return 0;
 }
 
@@ -120,7 +122,7 @@ int receive_data(int sock_fd, void *buf, size_t size, int is_ceed, int *done) {
           break ;
         } else {
           size -= received;
-          if (!strcmp(buf, TURFF_EOM)) {
+          if (!strcmp(buf, TURFF_EOM) && done != NULL ) {
             *done = 1;
             break;
           } else if (is_ceed) {

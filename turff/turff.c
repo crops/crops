@@ -35,10 +35,10 @@ void close_sockets(int dummy) {
 
 int main(int argc, char *argv[]) {
 
-  struct addrinfo *addr_p;
+  struct addrinfo *addr_p = NULL;
   struct sockaddr cli_addr;
   socklen_t cli_len;
-  int i, ceed_sock_fd, saved_out, saved_err, bound;
+  int i, ceed_sock_fd, saved_out = -1, saved_err = -1, bound = 0;
   const char *port;
 
   parse_turff_params(argc, argv);

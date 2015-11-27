@@ -68,11 +68,11 @@ int db_insert_node(char *id, char *ip, char *port, char *date)
 
   /* if a node with this id exists just update it*/
   if (node != NULL) {
-    asprintf (&qry, "UPDATE nodes SET ip = '%s', port = '%s', date = '%s' WHERE ID = '%s';",
+    asprintf(&qry, "UPDATE nodes SET ip = '%s', port = '%s', date = '%s' WHERE ID = '%s';",
     ip, port, date, id);
   }
   else {
-    asprintf (&qry, "INSERT INTO nodes (id, ip, port, date) VALUES ('%s','%s','%s', '%s');",
+    asprintf(&qry, "INSERT INTO nodes (id, ip, port, date) VALUES ('%s','%s','%s', '%s');",
     id, ip, port, date);
   }
 
@@ -126,9 +126,9 @@ int get_db_nodes(char *id)
 
   /* get all nodes */
   if (id == NULL)
-    asprintf (&qry, "SELECT * FROM nodes;");
+    asprintf(&qry, "SELECT * FROM nodes;");
   else
-    asprintf (&qry, "SELECT * from nodes WHERE id='%s';", id);
+    asprintf(&qry, "SELECT * from nodes WHERE id='%s';", id);
 
   result = exec_db_query(qry, find_node_callback, 0, &err);
   free(qry);

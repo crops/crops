@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "globals.h"
+#include "utils.h"
+#include "codi_db.h"
 #include "codi_list.h"
 
 turff_node *head = NULL;

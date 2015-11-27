@@ -104,10 +104,8 @@ char *curl_request(char *http_method, char *url, char *api,  char *data)
     if (res != CURLE_OK)
       INFO("curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 
-    if (!strcmp(http_method, POST_REQUEST)) {
+    if (!strcmp(http_method, POST_REQUEST))
       curl_slist_free_all(api_hdr);
-      free(data);
-    }
 
     free(request_str);
     curl_easy_cleanup(curl);

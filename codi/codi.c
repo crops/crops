@@ -20,7 +20,7 @@
 #include <arpa/inet.h>
 #include "utils.h"
 #include "globals.h"
-#include "codi.h"
+#include "codi_db.h"
 #include "codi_list.h"
 #include "codi_launcher.h"
 

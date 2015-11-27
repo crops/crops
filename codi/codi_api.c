@@ -15,6 +15,7 @@
  */
 
 #include <stdlib.h>
+#include <ctype.h>
 #include "globals.h"
 
 char *codi_ops[KEY_ARR_SZ];
