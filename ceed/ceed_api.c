@@ -52,8 +52,8 @@ void init_ceed_params(){
   ceed_ops[KEY('a')] = "linux";
 #endif
   ceed_ops[KEY('p')] = NULL;
-  ceed_ops[KEY('i')] = TURFF_IP;
-  ceed_ops[KEY('s')] = TURFF_PORT;
+  ceed_ops[KEY('i')] = CODI_IP;
+  ceed_ops[KEY('s')] = CODI_PORT;
   ceed_ops[KEY('v')] = VERSION;
   ceed_ops[KEY('r')] = " ";
   ceed_ops[KEY('z')] = CEED_NAME;

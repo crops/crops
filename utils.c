@@ -126,7 +126,7 @@ int receive_data(int sock_fd, void *buf, size_t size, int is_ceed, int *done) {
             *done = 1;
             break;
           } else if (is_ceed) {
-            printf("%s", buf);
+            printf("%s", (char*) buf);
           }
           buf = (char*)buf + received;
 #ifdef DBG
