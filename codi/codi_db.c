@@ -41,9 +41,9 @@ int init_db(void)
 {
   int result;
   char *err = 0;
-  char *qry = "CREATE TABLE IF NOT EXISTS nodes(id TEXT UNIQUE NOT NULL CHECK(id <> ''), \
-    ip TEXT NOT NULL CHECK(ip <> ''), port TEXT NOT NULL CHECK(port <> ''), \
-    date TEXT NOT NULL CHECK(date <> ''));";
+  char *qry = "CREATE TABLE IF NOT EXISTS nodes(id TEXT UNIQUE NOT NULL \
+    CHECK(id <> ''), ip TEXT NOT NULL CHECK(ip <> ''), port TEXT NOT NULL \
+    CHECK(port <> ''), date TEXT NOT NULL CHECK(date <> ''));";
 
   result = sqlite3_exec(codi_db, qry, 0, 0, &err);
 
@@ -58,7 +58,7 @@ int init_db(void)
 }
 
 /* insert node */
-int db_insert_node(char *id, char *ip, char *port, char *date)
+int db_insert_node(char *id, char *ip, char *port)
 {
   int result;
   char *qry, *err = 0;
@@ -68,12 +68,12 @@ int db_insert_node(char *id, char *ip, char *port, char *date)
 
   /* if a node with this id exists just update it*/
   if (node != NULL) {
-    asprintf(&qry, "UPDATE nodes SET ip = '%s', port = '%s', date = '%s' WHERE ID = '%s';",
-    ip, port, date, id);
+    asprintf(&qry, "UPDATE nodes SET ip = '%s', port = '%s', date = \
+    datetime(CURRENT_TIMESTAMP, 'localtime') WHERE ID = '%s';", ip, port, id);
   }
   else {
-    asprintf(&qry, "INSERT INTO nodes (id, ip, port, date) VALUES ('%s','%s','%s', '%s');",
-    id, ip, port, date);
+    asprintf(&qry, "INSERT INTO nodes (id, ip, port, date) VALUES ('%s','%s', \
+    '%s', datetime(CURRENT_TIMESTAMP, 'localtime'));", id, ip, port);
   }
 
   result = exec_db_query(qry, 0, 0, &err);

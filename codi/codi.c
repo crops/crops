@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
       cli_ip = (struct sockaddr_in*) &cli_addr;
       asprintf(&ip, "%s", inet_ntoa(cli_ip->sin_addr));
       cli_params[KEY('c')] = ip;
-      db_insert_node(cli_params[KEY('n')], cli_params[KEY('c')],  cli_params[KEY('s')], "some date");
+      db_insert_node(cli_params[KEY('n')], cli_params[KEY('c')],  cli_params[KEY('s')]);
     } else if (!strcmp(cli_params[KEY('z')], CEED_NAME) && (cli_params[KEY('l')] != NULL )) {
       /* ceed request for available toolchains */
       return_turff_nodes(cli_sock_fd);

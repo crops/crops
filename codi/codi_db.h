@@ -20,7 +20,7 @@
 #define CODI_DB      "codi.db"
 
 int init_db(void);
-int db_insert_node(char *id, char *ip, char *port, char *date);
+int db_insert_node(char *id, char *ip, char *port);
 int exec_db_query(const char *sql, int (*callback)(void*, int, char**, char**), \
   void *callback_arg, char **errmsg);
 int get_db_nodes(char *id);
