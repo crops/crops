@@ -1,0 +1,35 @@
+# This file describes the standard way to build a CROPS dispatcher image
+#
+# Usage:
+#
+# # Build CODI image with the following command
+# docker build -t crops/codi -f Dockerfile.codi .
+#
+
+FROM ubuntu:14.04
+MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+	libsqlite3-dev \
+	libjansson-dev	\
+	git	\
+	wget \
+	build-essential
+
+#Install a version of curl with unix sockets support
+RUN wget -P /tmp http://curl.haxx.se/download/curl-7.45.0.tar.gz && \
+	cd /tmp && \
+	tar xvf curl-7.45.0.tar.gz && \
+	cd curl-7.45.0 && \
+	./configure --prefix=/usr --enable-unix-sockets && \
+	make && \
+	make install
+
+
+# Build and install CODI
+RUN git clone -b master http://git.yoctoproject.org/git/crops /usr/local/crops && \
+	cd /usr/local/crops/codi && \
+	make && \
+	cp /usr/local/crops/codi/codi /bin/
+
