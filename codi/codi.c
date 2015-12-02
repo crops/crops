@@ -21,6 +21,7 @@
 #include "utils.h"
 #include "globals.h"
 #include "codi_db.h"
+#include "codi_api.h"
 #include "codi_list.h"
 #include "codi_launcher.h"
 
@@ -39,7 +40,7 @@ int main(int argc, char *argv[]) {
   struct sockaddr cli_addr;
   struct sockaddr_in *cli_ip;
   socklen_t cli_len;
-  int i, cli_sock_fd, node_sock_fd;
+  int i, cli_sock_fd;
   const char *codi_port = (const char*) CODI_PORT;
   char *ip, *cli_params[KEY_ARR_SZ];
   turff_node *req_node;
@@ -72,7 +73,7 @@ int main(int argc, char *argv[]) {
     receive_args(cli_sock_fd, cli_params);
 
     /* registration from turff */
-    if(!strcmp(cli_params[KEY('z')], TURFF_NAME)) {
+    if (!strcmp(cli_params[KEY('z')], TURFF_NAME)) {
       cli_ip = (struct sockaddr_in*) &cli_addr;
       asprintf(&ip, "%s", inet_ntoa(cli_ip->sin_addr));
       cli_params[KEY('c')] = ip;
@@ -84,27 +85,11 @@ int main(int argc, char *argv[]) {
       /* must be a command from ceed*/
       /* TODO - check if toolchain is up and try to start it if it is not*/
       req_node = find_turff_node(cli_params[KEY('d')]);
-      if(req_node != NULL) {
 
-        addr_p = connect_to_socket(req_node->ip, req_node->port, &node_sock_fd);
-
-        if(addr_p == NULL) {
-          INFO("Could not connect to node id: %s ip: %s port: %s\n",
-          req_node->id, req_node->ip, req_node->port);
-        } else {
-          INFO("Connected to node id: %s ip: %s port: %s\n",
-          req_node->id, req_node->ip, req_node->port);
-
-          /* change the source signature of the param array */
-          asprintf(&(cli_params[KEY('z')]), "%s", CODI_NAME);
-
-          /* forward parameters to turff */
-          send_args(node_sock_fd, cli_params);
-          redirect_sockets(node_sock_fd, cli_sock_fd);
-        }
-      } else {
+      if (req_node != NULL)
+        process_ceed_cmd(req_node, cli_sock_fd, cli_params);
+      else
         INFO("Container id: %s not found in CODI's table\n", cli_params[KEY('d')]);
-      }
     }
 
     /* clear parameters and wait for a new service request */
