@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
 	libjansson-dev	\
 	git	\
 	wget \
+	daemontools \
 	build-essential
 
 #Install a version of curl with unix sockets support
@@ -31,5 +32,11 @@ RUN wget -P /tmp http://curl.haxx.se/download/curl-7.45.0.tar.gz && \
 RUN git clone -b master http://git.yoctoproject.org/git/crops /usr/local/crops && \
 	cd /usr/local/crops/codi && \
 	make && \
-	cp /usr/local/crops/codi/codi /bin/
+	mkdir -p /bin/codi && \
+	cp /usr/local/crops/codi/codi /bin/codi/run
 
+# Monitor CODI and restart it on exit
+ENTRYPOINT ["supervise", "/bin/codi"]
+
+# Default CODI port
+EXPOSE 10000
