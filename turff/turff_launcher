@@ -1,25 +1,21 @@
 #!/usr/bin/env bash
 
 help () {
-	echo -e "\nThis is a wrapper for the Yocto build device agent"
-	echo -e "usage: $0 -f env_config_file -p 5555 \n";
+	echo -e "\nThis is a wrapper for launching TURFF"
+	echo -e "usage: $0 -f env_config_file\n";
 	echo "Options:"
-	echo -e "-f cross-compiler environment configuration file"
-	echo -e "-s port build agent is listening on"
+	echo -e "-f cross compiler environment configuration file"
 	echo -e "-h show this help menu"
 	exit 1;
 }
 
-EXEC=turff
+SUPERVISE=supervise
+EXEC=/bin/turff/
 
-while getopts ":hs:f:" opt; do
+while getopts ":hf:" opt; do
 	case $opt in
 		f)
 			env_conf_file=$OPTARG
-			;;
-		s)
-			port=$OPTARG
-			TURFF_PORT="-s $port"
 			;;
 		h)
 			help
@@ -36,14 +32,10 @@ while getopts ":hs:f:" opt; do
 	esac
 done
 
+source $env_conf_file
 
-if [[ -x "$env_conf_file" ]] ; then
-	source $env_conf_file
-	$EXEC $TURFF_PORT
+if [ $? -eq 0 ] ; then
+	$SUPERVISE $EXEC
 else
-	if [[ -f "$env_conf_file" ]] ; then
-		echo "File '$env_conf_file' is not executable"
-	else
-		echo "Environment configuration file not found"
-	fi
+	echo "Error setting up cross compiler environment"
 fi
