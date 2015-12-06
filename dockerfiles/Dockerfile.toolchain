@@ -50,4 +50,4 @@ RUN wget -P /tmp ${TOOLCHAIN_PATH}${TOOLCHAIN_NAME} && \
 RUN chmod 755 /opt/poky/environment-setup*
 
 # Container entry point
-ENTRYPOINT ["sudo", "-u", "root", "/bin/turff_launcher", "-f", "/opt/poky/environment-setup*"]
+ENTRYPOINT ["/bin/turff_launcher", "-f", "/opt/poky/environment-setup*"]
