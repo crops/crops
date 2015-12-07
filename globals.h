@@ -38,6 +38,7 @@
 #define CEED_NAME    "ceed"
 #define TURFF_NAME   "turff"
 #define CODI_NAME    "codi"
+#define TURFFID      "TURFFID"
 
 void info(const char *file, int line, const char *func, const char* fmt, ...);
 void debug(const char *file, int line, const char *func, const char* fmt, ...);

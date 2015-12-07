@@ -32,7 +32,7 @@ void print_turff_usage(int argc, char *argv[]) {
   printf(" -s port number on which the agent is listening [default: 9999]\n");
   printf(" -i CODI IP address [default: 127.0.0.1]\n");
   printf(" -d CODI port number [default: 10000]\n");
-  printf(" -n node_id to be sent to CODI [default: hostname]\n");
+  printf(" -n node_id to be sent to CODI [default: TURFFID env variable]\n");
   printf(" -h print this help menu\n");
   printf(" -v show turff version\n");
 }
@@ -227,8 +227,7 @@ int process_params(char *params[]) {
 int register_agent(char *turff_ops[]) {
   int turff_sock_fd;
   struct addrinfo *addr_p;
-  int hostname_len = 1024;
-  char hostname[hostname_len];
+  char *turff_id;
 
   addr_p = connect_to_socket(turff_ops[KEY('i')], turff_ops[KEY('d')], &turff_sock_fd);
 
@@ -241,11 +240,13 @@ int register_agent(char *turff_ops[]) {
   }
 
   if (turff_ops[KEY('n')] == NULL) {
-    bzero(&hostname, hostname_len);
-    if(gethostname(hostname, hostname_len)) {
-      ERROR("Unable to get hostname. Error:  %d\n", errno);
-    }
-    turff_ops[KEY('n')] = hostname ;
+    turff_id = getenv(TURFFID);
+    if(turff_id == NULL) {
+      INFO("Unable to read TURFFID from the environment\n");
+      INFO("Setting TURFFID to \"default\"\n");
+      turff_ops[KEY('n')] = "default" ;
+    } else
+      turff_ops[KEY('n')] = turff_id ;
   }
 
   send_args(turff_sock_fd, turff_ops);
