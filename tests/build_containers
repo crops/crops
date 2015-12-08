@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# This is a sanity test script for the CODI and toolchain Docker images.
+# This script has to be run from the dockerfiles directory.
+#
+# Example:
+#
+# ../tests/build_containers
+
+echo "Remove codi test image"
+docker rmi crops/codi:test
+
+echo "Remove toolchain test image"
+docker rmi crops/toolchain:test
+
+echo "Build CEED client"
+make clean -C ../ceed/; make -C ../ceed/
+
+echo "Build CODI test image"
+docker build -t crops/codi:test -f Dockerfile.codi .
+
+echo "Build toolchain test image"
+docker build -t crops/toolchain:test -f Dockerfile.toolchain .
+
+echo "Start CODI container"
+docker run -d --name codi-test --net=host crops/codi:test
+
+echo "Start toolchain container"
+docker run -d --name toolchain-test -v /crops/:/crops/ --env TURFFID=crops/toolchain:test --net=host crops/toolchain:test
+
+echo "List containers known to CODI"
+sleep 3; ../ceed/ceed -l
+
+echo "Stop and remove CODI test container"
+docker stop codi-test; docker rm codi-test
+
+echo "Stop and remove toolchain container"
+docker stop toolchain-test; docker rm toolchain-test
