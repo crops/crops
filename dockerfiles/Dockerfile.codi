@@ -2,9 +2,14 @@
 #
 # Usage:
 #
-# # Build CODI image with the following command
-# docker build -t crops/codi -f Dockerfile.codi .
+# # Build CODI image with the following command. Replace the "version" tag
+# with the current codi version
 #
+# docker build -t crops/codi:version -f Dockerfile.codi .
+#
+# Example: Build CODI version 0.1
+#
+# docker build -t crops/codi:0.1 -f Dockerfile.codi .
 
 FROM ubuntu:14.04
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>

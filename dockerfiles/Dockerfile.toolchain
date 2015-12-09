@@ -14,7 +14,7 @@
 # docker build -t crops/toolchain:my_tag -f Dockerfile.toolchain .
 #
 # Example for i586 target:
-# docker build -t crops/toolchain:my_tag -f Dockerfile.toolchain .
+# docker build -t crops/toolchain:i586 -f Dockerfile.toolchain .
 #
 # The default configuration below will build an i586 toolchain for an x86_64 host
 
