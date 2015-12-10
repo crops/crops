@@ -18,19 +18,11 @@
 #
 # The default configuration below will build an i586 toolchain for an x86_64 host
 
-FROM ubuntu:14.04
+FROM crops/toolchain:deps
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
 
 ENV TOOLCHAIN_NAME poky-glibc-x86_64-core-image-sato-i586-toolchain-2.0.sh
 ENV TOOLCHAIN_PATH http://downloads.yoctoproject.org/releases/yocto/yocto-2.0/toolchain/x86_64/
-
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-	python	\
-	daemontools \
-	git \
-	build-essential \
-	wget
 
 # Build and install turff
 RUN git clone -b master http://git.yoctoproject.org/git/crops /usr/local/crops && \

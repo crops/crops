@@ -1,0 +1,18 @@
+# This file describes the standard way to build the dependencies for CROPS
+# toolchain images
+#
+# Usage:
+#
+# docker build -t crops/toolchain:deps -f Dockerfile.toolchain.deps .
+
+FROM ubuntu:14.04
+MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+	python	\
+	daemontools \
+	git \
+	build-essential \
+	wget
+

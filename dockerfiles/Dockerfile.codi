@@ -11,27 +11,8 @@
 #
 # docker build -t crops/codi:0.1 -f Dockerfile.codi .
 
-FROM ubuntu:14.04
+FROM crops/codi:deps
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
-
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-	libsqlite3-dev \
-	libjansson-dev	\
-	git	\
-	wget \
-	daemontools \
-	build-essential
-
-#Install a version of curl with unix sockets support
-RUN wget -P /tmp http://curl.haxx.se/download/curl-7.45.0.tar.gz && \
-	cd /tmp && \
-	tar xvf curl-7.45.0.tar.gz && \
-	cd curl-7.45.0 && \
-	./configure --prefix=/usr --enable-unix-sockets && \
-	make && \
-	make install
-
 
 # Build and install CODI
 RUN git clone -b master http://git.yoctoproject.org/git/crops /usr/local/crops && \
