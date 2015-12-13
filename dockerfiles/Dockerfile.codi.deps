@@ -18,7 +18,9 @@ RUN apt-get update && apt-get install -y \
 	git	\
 	wget \
 	daemontools \
-	build-essential
+	build-essential && \
+	apt-get upgrade -y
+
 
 #Install a version of curl with unix sockets support
 RUN wget -P /tmp http://curl.haxx.se/download/curl-7.45.0.tar.gz && \
