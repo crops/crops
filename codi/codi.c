@@ -83,13 +83,28 @@ int main(int argc, char *argv[]) {
       return_turff_nodes(cli_sock_fd);
     } else if (!strcmp(cli_params[KEY('z')], CEED_NAME) && (cli_params[KEY('d')] != NULL )) {
       /* must be a command from ceed*/
-      /* TODO - check if toolchain is up and try to start it if it is not*/
+
       req_node = find_turff_node(cli_params[KEY('d')]);
 
-      if (req_node != NULL)
-        process_ceed_cmd(req_node, cli_sock_fd, cli_params);
-      else
-        INFO("Container id: %s not found in CODI's table\n", cli_params[KEY('d')]);
+      if (req_node != NULL) {
+        if (is_container_running(URL_LOCAL, cli_params[KEY('d')])) {
+          process_ceed_cmd(req_node, cli_sock_fd, cli_params);
+        } else {
+          if (start_container(URL_LOCAL, cli_params[KEY('d')])) {
+            sleep(1);
+            process_ceed_cmd(req_node, cli_sock_fd, cli_params);
+          } else {
+            INFO("Container %s does not exists\n", cli_params[KEY('d')]);
+          }
+        }
+      } else {
+        if (start_container(URL_LOCAL, cli_params[KEY('d')])) {
+          sleep(1);
+          process_ceed_cmd(req_node, cli_sock_fd, cli_params);
+        } else {
+          INFO("Container %s not running\n", cli_params[KEY('d')]);
+        }
+      }
     }
 
     /* clear parameters and wait for a new service request */

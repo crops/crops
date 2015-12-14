@@ -36,14 +36,6 @@ json_t *request_json(char *request_method, char *url, char *api, char *data)
 }
 
 /* execute the request and return the raw server reply */
-char *request(char *request_method, char *url, char *api, char *data)
-{
-  char *in ;
-
-  in = curl_request(request_method, url, api, data);
-  return in;
-}
-
 char *curl_request(char *http_method, char *url, char *api,  char *data)
 {
 
@@ -53,7 +45,7 @@ char *curl_request(char *http_method, char *url, char *api,  char *data)
   curl_mem_chunk_t srv_reply ;
   char *request_str ;
 
-  srv_reply.mem = malloc(1) ;
+  srv_reply.mem = calloc(1, 1) ;
 
   if (srv_reply.mem == NULL)
     ERROR("ERROR: Unable to allocate memory");
@@ -67,10 +59,10 @@ char *curl_request(char *http_method, char *url, char *api,  char *data)
       /* map the unix socket as a connection endpoint */
       curl_easy_setopt(curl, CURLOPT_UNIX_SOCKET_PATH, url);
 
-    if (!strcmp(http_method, POST_REQUEST))
-      asprintf(&request_str, "%s%s", "http:", api);
-    else
-      asprintf(&request_str, "'%s%s'", "http:", api);
+      if (!strcmp(http_method, POST_REQUEST))
+        asprintf(&request_str, "%s%s", "http:", api);
+      else
+        asprintf(&request_str, "'%s%s'", "http:", api);
     } else {
       if (!strcmp(http_method, POST_REQUEST))
         asprintf(&request_str, "%s%s", url, api);
@@ -87,11 +79,11 @@ char *curl_request(char *http_method, char *url, char *api,  char *data)
       curl_easy_setopt(curl, CURLOPT_HTTPHEADER, api_hdr);
 
       if (data == NULL)
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, " ");
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "");
       else
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
     }
-
+    curl_easy_setopt(curl, CURLOPT_HEADER, 1);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *) &srv_reply);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, process_srv_reply);
 
@@ -117,6 +109,7 @@ char *curl_request(char *http_method, char *url, char *api,  char *data)
 size_t process_srv_reply(void *ptr, size_t size, size_t nmemb, void *reply_p)
 {
   size_t chunk_size = size * nmemb;
+
   curl_mem_chunk_t *mem_chunk = (curl_mem_chunk_t *)reply_p;
 
   /* append chunk_size memory block to the original memory block */
@@ -139,14 +132,19 @@ bool start_existing_container(char *url, char *cont_name)
   char *api_str = NULL, *result;
 
   asprintf(&api_str, START_CONTAINER, cont_name);
-  result = request(POST_REQUEST, url, api_str, NULL);
+  result = curl_request(POST_REQUEST, url, api_str, NULL);
   free(api_str);
 
-  if (strstr(result, NO_ERROR_204) != NULL ||
-      strstr(result, NOT_MODIFIED_304) != NULL) {
+  if ((strstr(result, NO_ERROR_204) != NULL) ||
+    (strstr(result, NOT_MODIFIED_304) != NULL)) {
     free(result);
     return true;
   } else {
+
+#ifdef DBG
+  INFO("Unable to start container : %s. Status: %s\n", cont_name, result);
+#endif
+
     free(result);
     return false;
   }
@@ -165,6 +163,11 @@ bool is_container_running(char *url, char *cont_name)
     json_decref(result);
     return true;
   } else {
+
+#ifdef DBG
+  INFO("Container : %s is not running\n", cont_name);
+#endif
+
     json_decref(result);
     return false;
   }
@@ -183,32 +186,52 @@ bool container_exists(char *url, char *cont_name)
     json_decref(result);
     return true;
   } else {
+
+#ifdef DBG
+  INFO("Container : %s does not exist\n", cont_name);
+#endif
+
     json_decref(result);
     return false;
   }
 }
 
-bool download_img(char *url, char *repo, char *tag)
+bool download_img(char *url, char *repo_tag)
 {
-  char *api_str = NULL, *result;
+  char *api_str = NULL, *repo, *tag, *tmp, *result;
+  asprintf(&repo, repo_tag);
+  tmp = strchr(repo, ':');
 
+  if (!tmp)
+    return false;
+
+  tag = tmp + 1 ;
+  *tmp = '\0';
   asprintf(&api_str, GET_IMAGE, repo, tag);
-  result = request(POST_REQUEST, url, api_str, NULL);
+  result = curl_request(POST_REQUEST, url, api_str, NULL);
   free(api_str);
+  free(repo);
 
   if (strstr(result, PULL_COMPLETE) != NULL ||
-    strstr(result, IMAGE_UP_TO_DATE) != NULL) {
+    strstr(result, IMAGE_UP_TO_DATE) != NULL ||
+    strstr(result, OK_200) != NULL) {
     free(result);
     return true;
   } else {
+
+#ifdef DBG
+  INFO("Unable to download image : %s:%s. Status: %s\n", repo, tag, result);
+#endif
+
     free(result);
     return false;
   }
 }
 
-bool start_new_container(char *url, char *img, char *host_dir)
+bool create_new_container(char *url, char *img, char *host_dir)
 {
-  char *cont_params = NULL, *result;
+  int i;
+  char *cont_params = NULL, *tmp_img, *qry_str, *result;
 
 char *cont_definition = CONTAINER_PARAMS(
   {
@@ -221,11 +244,17 @@ char *cont_definition = CONTAINER_PARAMS(
     "Tty": false,
     "OpenStdin": false,
     "StdinOnce": false,
-    "Env": null,
+    "Env": [
+      "TURFFID=%s"
+    ],
     "Cmd": [
       "/bin/crops"
     ],
-    "Entrypoint": null,
+    "Entrypoint": [
+      "/bin/turff_launcher",
+      "-f",
+      "/opt/poky/environment-setup*"
+    ],
     "Image": "%s",
     "Labels": null,
     "Mounts": [
@@ -279,15 +308,70 @@ char *cont_definition = CONTAINER_PARAMS(
   }
 );
 
-  asprintf(&cont_params, cont_definition, img, host_dir, host_dir);
-  result = request(POST_REQUEST, url, CREATE_CONTAINER, cont_params);
+  asprintf(&tmp_img, img);
+
+  /* container names cannot have special characters */
+  /* replace non alpha numberical characters with dashes */
+  for(i = 0; i < strlen(tmp_img); i++) {
+    if (!isalnum(tmp_img[i]))
+      tmp_img[i] = '-';
+  }
+
+
+  asprintf(&cont_params, cont_definition, img, img, host_dir, host_dir);
+  asprintf(&qry_str, CREATE_CONTAINER, tmp_img);
+  free(tmp_img);
+  result = curl_request(POST_REQUEST, url, qry_str, cont_params);
   free(cont_params);
+  free(qry_str);
+
+
 
   if (strstr(result, CREATED_201) != NULL) {
     free(result);
     return true;
   } else {
+
+#ifdef DBG
+  INFO("Unable to create container : %s. Status: %s\n", img, result);
+#endif
+
     free(result);
     return false;
   }
+}
+
+bool start_container(char *url, char *cont_name)
+{
+  int i;
+  char *tmp_name;
+
+  asprintf(&tmp_name, cont_name);
+
+  /* container names cannot have special characters */
+  /* replace non alpha numberical characters with dashes */
+  for (i = 0; i < strlen(tmp_name); i++) {
+    if (!isalnum(tmp_name[i]))
+      tmp_name[i] = '-';
+  }
+
+  if (container_exists(url, tmp_name)) {
+    if (start_existing_container(url, tmp_name)) {
+      free(tmp_name);
+      return true;
+    }
+  } else {
+    if (download_img(url, cont_name)) {
+      /* TODO host_dir will be different on Linux/Mac/Windows!!! */
+      if (create_new_container(url, cont_name, "/crops")) {
+        if (start_existing_container(url, tmp_name)) {
+          free(tmp_name);
+          return true;
+        }
+      }
+    }
+  }
+
+  free(tmp_name);
+  return false;
 }

@@ -28,7 +28,7 @@
 #define GET_IMAGES               "/images/json"
 #define ALL_CONTAINERS           "/containers/json?all=true"
 #define START_CONTAINER          "/containers/%s/start"
-#define CREATE_CONTAINER         "/containers/create"
+#define CREATE_CONTAINER         "/containers/create?name=%s"
 #define GET_IMAGE                "/images/create?fromImage=%s&tag=%s"
 
 #define NAMED_CONTAINER          "/containers/json?all=true&filters=" \
@@ -43,12 +43,14 @@
 #define NO_ERROR_204       "204 No Content"
 #define NOT_MODIFIED_304   "304 Not Modified"
 #define CREATED_201        "201 Created"
+#define OK_200             "200 OK"
 
 #define CONTAINER_PARAMS(...) #__VA_ARGS__
 
 char *curl_request(char *http_method, char *url, char *api,  char *data);
 size_t process_srv_reply(void *ptr, size_t size, size_t nmemb, void *reply_p);
 json_t *request_json(char *request_method, char *url, char *api, char *data);
-char *request(char *request_type, char *url, char *api, char *data);
+bool is_container_running(char *url, char *cont_name);
+bool start_container(char *url, char *cont_name);
 
 #endif
