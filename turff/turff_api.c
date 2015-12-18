@@ -248,7 +248,7 @@ int register_agent(char *turff_ops[]) {
     } else
       turff_ops[KEY('n')] = turff_id ;
   }
-
+  sleep(2);
   send_args(turff_sock_fd, turff_ops);
 
   return 0;

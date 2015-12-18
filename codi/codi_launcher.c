@@ -64,10 +64,7 @@ char *curl_request(char *http_method, char *url, char *api,  char *data)
       else
         asprintf(&request_str, "'%s%s'", "http:", api);
     } else {
-      if (!strcmp(http_method, POST_REQUEST))
-        asprintf(&request_str, "%s%s", url, api);
-      else
-        asprintf(&request_str, "'%s%s'", url, api);
+        asprintf(&request_str, "%s%s%s",  "http://", url, api);
     }
 
     curl_easy_setopt(curl, CURLOPT_URL, request_str);

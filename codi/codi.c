@@ -18,6 +18,7 @@
 #include <signal.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 #include "utils.h"
 #include "globals.h"
 #include "codi_db.h"
@@ -25,7 +26,14 @@
 #include "codi_list.h"
 #include "codi_launcher.h"
 
-static int codi_sock_fd;
+int codi_sock_fd;
+extern char *codi_ops[];
+static int cli_sock_fd;
+struct sockaddr cli_addr;
+socklen_t cli_len;
+static struct sockaddr_in *cli_ip;
+static char *cli_params[KEY_ARR_SZ], *ip;
+pthread_mutex_t lock;
 
 /*TODO - close sockets on CTRL+C. Get rid of this when running as a daemon */
 void close_sockets(int dummy) {
@@ -35,24 +43,57 @@ void close_sockets(int dummy) {
 }
 
 
+static void *listener_thread(void *args)
+{
+  int i;
+  while (1) {
+    cli_sock_fd = accept(codi_sock_fd, &cli_addr, &cli_len);
+
+    if (cli_sock_fd < 0)
+      ERROR("ERROR on accept");
+
+    pthread_mutex_lock(&lock);
+    free_params(cli_params);
+    receive_args(cli_sock_fd, cli_params);
+
+    /*turff registration*/
+    if (!strcmp(cli_params[KEY('z')], TURFF_NAME)) {
+      cli_ip = (struct sockaddr_in*) &cli_addr;
+      asprintf(&ip, "%s", inet_ntoa(cli_ip->sin_addr));
+      cli_params[KEY('c')] = ip;
+      db_insert_node(cli_params[KEY('n')], cli_params[KEY('c')],  cli_params[KEY('s')]);
+      close(cli_sock_fd);
+    } else if (!strcmp(cli_params[KEY('z')], CEED_NAME) && (cli_params[KEY('l')] != NULL )) {
+      /* ceed request for available toolchains */
+      return_turff_nodes(cli_sock_fd);
+      close(cli_sock_fd);
+    }
+
+    pthread_mutex_unlock(&lock);
+  }
+  return NULL;
+}
+
 int main(int argc, char *argv[]) {
   struct addrinfo *addr_p;
-  struct sockaddr cli_addr;
-  struct sockaddr_in *cli_ip;
-  socklen_t cli_len;
-  int i, cli_sock_fd;
+  int i, cli_sock_fd_tmp, process_ok;
   const char *codi_port = (const char*) CODI_PORT;
-  char *ip, *cli_params[KEY_ARR_SZ];
-  turff_node *req_node;
+  char *ceed_params_tmp[KEY_ARR_SZ];
+  char *docker_url;
+  pthread_t reg_toolchain_thread;
+  turff_node *req_node = NULL;
 
+  parse_codi_params(argc, argv);
   for (i = 0; i <  KEY_ARR_SZ; i++)
     cli_params[i] = NULL;
+
+  if (pthread_mutex_init(&lock, NULL) != 0)
+    ERROR("Mutex initialization failed\n");
 
   addr_p = bind_to_socket(NULL, codi_port, &codi_sock_fd);
 
   if (addr_p == NULL) {
     ERROR("Could not bind CODI to socket\n");
-    exit(EXIT_FAILURE);
   } else {
     INFO("CODI listening on port: %s\n", codi_port);
 
@@ -63,60 +104,65 @@ int main(int argc, char *argv[]) {
 
   signal(SIGINT, close_sockets);
 
-  while(1) {
-    cli_sock_fd = accept(codi_sock_fd, &cli_addr, &cli_len);
+  /*start toolchain registration thread*/
+  if (pthread_create(&reg_toolchain_thread, NULL, listener_thread, NULL)) {
+    ERROR("Unable to start socket listener thread\n");
+  }
 
-    if (cli_sock_fd < 0) {
-      ERROR("ERROR on accept");
+  process_ok = 0;
+  for (i = 0; i <  KEY_ARR_SZ; i++)
+    ceed_params_tmp[i] = NULL;
+
+  while(1) {
+
+    pthread_mutex_lock(&lock);
+    //first ceed request
+    if (ceed_params_tmp[KEY('z')] == NULL && cli_params[KEY('z')] != NULL && !process_ok) {
+      copy_params(cli_params, &ceed_params_tmp);
+      cli_sock_fd_tmp = dup(cli_sock_fd);
     }
 
-    receive_args(cli_sock_fd, cli_params);
+    if (cli_params[KEY('z')] != NULL && !process_ok) {
+      if (!strcmp(cli_params[KEY('z')], CEED_NAME) && (cli_params[KEY('d')] != NULL )) {
+        /* must be a command from ceed*/
+        req_node = find_turff_node(cli_params[KEY('d')]);
 
-    /* registration from turff */
-    if (!strcmp(cli_params[KEY('z')], TURFF_NAME)) {
-      cli_ip = (struct sockaddr_in*) &cli_addr;
-      asprintf(&ip, "%s", inet_ntoa(cli_ip->sin_addr));
-      cli_params[KEY('c')] = ip;
-      db_insert_node(cli_params[KEY('n')], cli_params[KEY('c')],  cli_params[KEY('s')]);
-    } else if (!strcmp(cli_params[KEY('z')], CEED_NAME) && (cli_params[KEY('l')] != NULL )) {
-      /* ceed request for available toolchains */
-      return_turff_nodes(cli_sock_fd);
-    } else if (!strcmp(cli_params[KEY('z')], CEED_NAME) && (cli_params[KEY('d')] != NULL )) {
-      /* must be a command from ceed*/
-
-      req_node = find_turff_node(cli_params[KEY('d')]);
-
-      if (req_node != NULL) {
-        if (is_container_running(URL_LOCAL, cli_params[KEY('d')])) {
-          process_ceed_cmd(req_node, cli_sock_fd, cli_params);
+        /* check if docker eninge is listening on a unix socket or tcp*/
+        if(codi_ops[KEY('u')] == NULL) {
+          asprintf(&docker_url, "%s:%s", DOCKER_ENG_IP, DOCKER_ENG_PORT);
         } else {
-          if (start_container(URL_LOCAL, cli_params[KEY('d')])) {
-            sleep(1);
-            process_ceed_cmd(req_node, cli_sock_fd, cli_params);
+          asprintf(&docker_url, "%s", DOCKER_UNIX_SOCKET);
+        }
+
+        if (req_node != NULL) {
+          if (is_container_running(docker_url, cli_params[KEY('d')])) {
+            process_ok = 1;
+          } else if (start_container(docker_url, cli_params[KEY('d')])) {
+            process_ok = 1;
           } else {
             INFO("Container %s does not exists\n", cli_params[KEY('d')]);
           }
-        }
-      } else {
-        if (start_container(URL_LOCAL, cli_params[KEY('d')])) {
-          sleep(1);
-          process_ceed_cmd(req_node, cli_sock_fd, cli_params);
+        } else if (start_container(docker_url, cli_params[KEY('d')])) {
+          process_ok = 1;
         } else {
           INFO("Container %s not running\n", cli_params[KEY('d')]);
         }
+        free(docker_url);
       }
     }
 
-    /* clear parameters and wait for a new service request */
-    for (i = 0; i< KEY_ARR_SZ; i++){
-      if (cli_params[i] != NULL) {
-#ifdef DBG
-        DEBUG("Received parameter [%c] : %s\n", i+'a', cli_params[i] );
-#endif
-        free(cli_params[i]);
-        cli_params[i] = NULL ;
+    pthread_mutex_unlock(&lock);
+
+    if (cli_params[KEY('z')] != NULL && process_ok) {
+      req_node = find_turff_node(ceed_params_tmp[KEY('d')]);
+      if (req_node != NULL) {
+        process_ceed_cmd(req_node, cli_sock_fd_tmp, ceed_params_tmp);
+        process_ok = 0;
+        free_params(ceed_params_tmp);
+        free_params(cli_params);
+        close(cli_sock_fd_tmp);
+        close(cli_sock_fd);
       }
     }
-    close(cli_sock_fd);
   }
 }

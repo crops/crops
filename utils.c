@@ -48,7 +48,8 @@ int redirect_sockets(int in_sock, int out_sock) {
           break ;
         } else {
           size -= received;
-          if (!strcmp(buf, TURFF_EOM)) {
+          if (strstr((char*) buf, TURFF_EOM)) {
+            send_data(out_sock, (const void *) buf,received);
             break;
           } else {
             send_data(out_sock, (const void *) buf,received);
@@ -122,7 +123,7 @@ int receive_data(int sock_fd, void *buf, size_t size, int is_ceed, int *done) {
           break ;
         } else {
           size -= received;
-          if (!strcmp(buf, TURFF_EOM) && done != NULL ) {
+          if (strstr((char*) buf, TURFF_EOM) && done != NULL ) {
             *done = 1;
             break;
           } else if (is_ceed) {
@@ -136,7 +137,7 @@ int receive_data(int sock_fd, void *buf, size_t size, int is_ceed, int *done) {
       }
     }
   } else if (ready < 0){
-    ERROR("Select error\n");
+    ERROR("Select error : %s\n", strerror(errno));
   }
 
   return 0;
@@ -314,4 +315,23 @@ struct addrinfo* bind_to_socket(char *ip_in, const char *port_in, int* sock_fd_o
 
   freeaddrinfo(srv_addr);
   return addr_p;
+}
+
+void copy_params(char *in[], char *out[]) {
+  int i;
+  for (i = 0; i< KEY_ARR_SZ; i++){
+    if (in[i] != NULL) {
+      asprintf(&out[i],"%s",in[i]);
+    }
+  }
+}
+
+void free_params(char *params[]) {
+  int i;
+  for (i = 0; i< KEY_ARR_SZ; i++){
+    if (params[i] != NULL) {
+      free(params[i]);
+      params[i] = NULL ;
+    }
+  }
 }

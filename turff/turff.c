@@ -99,8 +99,8 @@ int main(int argc, char *argv[]) {
       }
 
       /* delay EOM - send as separate buffer */
-      usleep(500000);
-      send_data(ceed_sock_fd, TURFF_EOM, sizeof(TURFF_EOM));
+      fprintf(stdout, TURFF_EOM);
+      fflush(stdout);
 
       /* restore stdout and stderr */
       dup2(saved_err, 2);

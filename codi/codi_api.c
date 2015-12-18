@@ -20,6 +20,7 @@
 #include "utils.h"
 #include "codi_api.h"
 #include "codi_list.h"
+#include "codi_launcher.h"
 
 char *codi_ops[KEY_ARR_SZ];
 
@@ -27,6 +28,9 @@ void print_codi_usage(int argc, char *argv[])
 {
   printf("Usage: %s \n", argv[0]);
   printf(" -s port number on which CODI is listening [default: 10000]\n");
+  printf(" -u unix socket path of Docker engine [default: /var/lib/docker.sock]\n");
+  printf(" -i ip address of Docker engine [default: 127.0.0.1]\n");
+  printf(" -p port number of Docker engine [default: 2376]\n");
   printf(" -h print this help menu\n");
   printf(" -v show CODI version\n");
 }
@@ -40,16 +44,19 @@ void init_codi_params()
 
   codi_ops[KEY('s')] = CODI_PORT;
   codi_ops[KEY('v')] = VERSION;
+  codi_ops[KEY('i')] = DOCKER_ENG_IP;
+  codi_ops[KEY('p')] = DOCKER_ENG_PORT;
+  codi_ops[KEY('u')] = NULL;
   codi_ops[KEY('z')] = CODI_NAME;
 }
 
 void parse_codi_params(int argc, char *argv[])
 {
-  int c ;
+  int c, i_flg = 0, p_flg = 0, u_flg = 0;
 
   init_codi_params() ;
 
-  while ((c = getopt(argc, argv, "hvs:")) != -1) {
+  while ((c = getopt(argc, argv, "hvs:i:p:u:")) != -1) {
     switch (c) {
     case 'h':
       print_codi_usage(argc, argv);
@@ -62,8 +69,32 @@ void parse_codi_params(int argc, char *argv[])
     case 's':
       codi_ops[KEY('s')]  = optarg;
       break;
+    case 'i':
+      if(u_flg) {
+        print_codi_usage(argc, argv);
+      } else {
+        i_flg++;
+        codi_ops[KEY('i')]  = optarg;
+      }
+      break;
+    case 'p':
+      if(u_flg) {
+        print_codi_usage(argc, argv);
+      } else {
+        p_flg++;
+        codi_ops[KEY('p')]  = optarg;
+      }
+      break;
+    case 'u':
+      if(i_flg || p_flg) {
+        print_codi_usage(argc, argv);
+      } else {
+        u_flg++;
+        codi_ops[KEY('u')]  = optarg;
+      }
+      break;
     case '?':
-      if (optopt == 's')
+      if (optopt == 's' || optopt == 'i' || optopt == 'p' || optopt == 'u')
         INFO("Option -%c requires an argument.\n", optopt);
       else if (isprint (optopt))
         INFO("Unknown option `-%c'.\n", optopt);

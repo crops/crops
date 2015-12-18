@@ -24,7 +24,9 @@
 /* Docker Remote API requests */
 #define GET_REQUEST              "GET"
 #define POST_REQUEST             "POST"
-#define URL_LOCAL                "/var/run/docker.sock"
+#define DOCKER_UNIX_SOCKET       "/var/run/docker.sock"
+#define DOCKER_ENG_IP            "127.0.0.1"
+#define DOCKER_ENG_PORT       	 "2376"
 #define GET_IMAGES               "/images/json"
 #define ALL_CONTAINERS           "/containers/json?all=true"
 #define START_CONTAINER          "/containers/%s/start"

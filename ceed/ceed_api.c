@@ -147,8 +147,8 @@ void parse_ceed_params(int argc, char *argv[]) {
     }
   }
 
-  if ((ceed_ops[KEY('l')] == NULL && ceed_ops[KEY('p')] == NULL && ceed_ops[KEY('g')] == NULL ) || (ceed_ops[KEY('i')] == NULL ||
-    ceed_ops[KEY('s')] == NULL)) {
+  if ((ceed_ops[KEY('l')] == NULL && ceed_ops[KEY('p')] == NULL && ceed_ops[KEY('g')] == NULL )
+    || (ceed_ops[KEY('i')] == NULL || ceed_ops[KEY('s')] == NULL)) {
     print_ceed_usage(argc, argv);
   }
 }
