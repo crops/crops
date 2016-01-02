@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Intel Corporation
+ * Copyright (C) 2016 Intel Corporation
  *
  * Author: Todor Minchev <todor.minchev@linux.intel.com>
  *
