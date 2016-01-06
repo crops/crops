@@ -24,7 +24,7 @@ char *ceed_ops[KEY_ARR_SZ];
 
 void print_ceed_usage(int argc, char *argv[]) {
 
-  printf("Usage: %s -p prj -i 192.168.99.100 -s 9999 -b\n", argv[0]);
+  printf("Usage: %s -p prj -i 192.168.99.100 -s 10000 -b\n", argv[0]);
   printf("	-i CODI ip address [default: 127.0.0.1]\n");
   printf("	-s CODI listening port [default: 10000]\n");
   printf("	-l list available build containers\n");
