@@ -127,11 +127,11 @@ int main(int argc, char *argv[]) {
         /* must be a command from ceed*/
         req_node = find_turff_node(cli_params[KEY('d')]);
 
-        /* check if docker eninge is listening on a unix socket or tcp*/
-        if(codi_ops[KEY('u')] == NULL) {
-          asprintf(&docker_url, "%s:%s", DOCKER_ENG_IP, DOCKER_ENG_PORT);
+        /* check if docker engine is listening on a unix socket or tcp*/
+        if (codi_ops[KEY('i')] == NULL || codi_ops[KEY('p')] == NULL) {
+          asprintf(&docker_url, "%s", codi_ops[KEY('u')]);
         } else {
-          asprintf(&docker_url, "%s", DOCKER_UNIX_SOCKET);
+          asprintf(&docker_url, "%s:%s", codi_ops[KEY('i')], codi_ops[KEY('p')]);
         }
 
         if (req_node != NULL) {

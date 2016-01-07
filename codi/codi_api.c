@@ -44,9 +44,9 @@ void init_codi_params()
 
   codi_ops[KEY('s')] = CODI_PORT;
   codi_ops[KEY('v')] = VERSION;
-  codi_ops[KEY('i')] = DOCKER_ENG_IP;
-  codi_ops[KEY('p')] = DOCKER_ENG_PORT;
-  codi_ops[KEY('u')] = NULL;
+  codi_ops[KEY('i')] = NULL;
+  codi_ops[KEY('p')] = NULL;
+  codi_ops[KEY('u')] = DOCKER_UNIX_SOCKET;
   codi_ops[KEY('z')] = CODI_NAME;
 }
 
