@@ -42,7 +42,6 @@ void close_sockets(int dummy) {
   exit(0);
 }
 
-
 static void *listener_thread(void *args)
 {
   int i;
@@ -62,6 +61,8 @@ static void *listener_thread(void *args)
       asprintf(&ip, "%s", inet_ntoa(cli_ip->sin_addr));
       cli_params[KEY('c')] = ip;
       db_insert_node(cli_params[KEY('n')], cli_params[KEY('c')],  cli_params[KEY('s')]);
+      INFO("\nToolchain registration received: %s : %s : %s \n", cli_params[KEY('n')],
+        cli_params[KEY('c')], cli_params[KEY('s')]) ;
       close(cli_sock_fd);
     } else if (!strcmp(cli_params[KEY('z')], CEED_NAME) && (cli_params[KEY('l')] != NULL )) {
       /* ceed request for available toolchains */
@@ -116,39 +117,39 @@ int main(int argc, char *argv[]) {
   while(1) {
 
     pthread_mutex_lock(&lock);
-    //first ceed request
-    if (ceed_params_tmp[KEY('z')] == NULL && cli_params[KEY('z')] != NULL && !process_ok) {
-      copy_params(cli_params, &ceed_params_tmp);
-      cli_sock_fd_tmp = dup(cli_sock_fd);
-    }
 
-    if (cli_params[KEY('z')] != NULL && !process_ok) {
-      if (!strcmp(cli_params[KEY('z')], CEED_NAME) && (cli_params[KEY('d')] != NULL )) {
-        /* must be a command from ceed*/
-        req_node = find_turff_node(cli_params[KEY('d')]);
+    if (cli_params[KEY('z')] != NULL && !process_ok && !strcmp(cli_params[KEY('z')], CEED_NAME)
+      && cli_params[KEY('d')] != NULL) {
 
-        /* check if docker engine is listening on a unix socket or tcp*/
-        if (codi_ops[KEY('i')] == NULL || codi_ops[KEY('p')] == NULL) {
-          asprintf(&docker_url, "%s", codi_ops[KEY('u')]);
-        } else {
-          asprintf(&docker_url, "%s:%s", codi_ops[KEY('i')], codi_ops[KEY('p')]);
-        }
+      if (ceed_params_tmp[KEY('z')] == NULL) {
+        copy_params(cli_params, &ceed_params_tmp);
+        cli_sock_fd_tmp = dup(cli_sock_fd);
+      }
 
-        if (req_node != NULL) {
-          if (is_container_running(docker_url, cli_params[KEY('d')])) {
-            process_ok = 1;
-          } else if (start_container(docker_url, cli_params[KEY('d')])) {
-            process_ok = 1;
-          } else {
-            INFO("Container %s does not exists\n", cli_params[KEY('d')]);
-          }
+      /* must be a command from ceed*/
+      req_node = find_turff_node(cli_params[KEY('d')]);
+
+      /* check if docker engine is listening on a unix socket or tcp*/
+      if (codi_ops[KEY('i')] == NULL || codi_ops[KEY('p')] == NULL) {
+        asprintf(&docker_url, "%s", codi_ops[KEY('u')]);
+      } else {
+        asprintf(&docker_url, "%s:%s", codi_ops[KEY('i')], codi_ops[KEY('p')]);
+      }
+
+      if (req_node != NULL) {
+        if (is_container_running(docker_url, cli_params[KEY('d')])) {
+          process_ok = 1;
         } else if (start_container(docker_url, cli_params[KEY('d')])) {
           process_ok = 1;
         } else {
-          INFO("Container %s not running\n", cli_params[KEY('d')]);
+          INFO("Container %s does not exists\n", cli_params[KEY('d')]);
         }
-        free(docker_url);
+      } else if (start_container(docker_url, cli_params[KEY('d')])) {
+        process_ok = 1;
+      } else {
+        INFO("Container %s not running\n", cli_params[KEY('d')]);
       }
+      free(docker_url);
     }
 
     pthread_mutex_unlock(&lock);
