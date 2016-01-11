@@ -124,6 +124,8 @@ int receive_data(int sock_fd, void *buf, size_t size, int is_ceed, int *done) {
         } else {
           size -= received;
           if (strstr((char*) buf, TURFF_EOM) && done != NULL ) {
+            memset(strstr((char*) buf, TURFF_EOM), 0, sizeof(TURFF_EOM));
+            printf("%s", (char*) buf);
             *done = 1;
             break;
           } else if (is_ceed) {
