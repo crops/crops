@@ -129,5 +129,6 @@ int process_ceed_cmd(turff_node *t_node, int ceed_sock_fd, char *ceed_params[])
     send_args(turff_sock_fd, ceed_params);
     redirect_sockets(turff_sock_fd, ceed_sock_fd);
   }
+  close(turff_sock_fd);
   return 0;
 }
