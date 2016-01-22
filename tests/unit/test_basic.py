@@ -1,8 +1,6 @@
 ''' Crawl the running Docker site and verify all links give a 200 OK '''
 
 import unittest
-import re
-import requests
 import subprocess
 
 

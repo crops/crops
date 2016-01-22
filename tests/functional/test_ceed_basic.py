@@ -1,10 +1,9 @@
-''' Crawl the running Docker site and verify all links give a 200 OK '''
+''' Test Basic ceed/codi api'''
 
 import unittest
 import re
-import requests
 import subprocess
-import select
+
 
 # This test set ASSUMES the initial scripts have been run and therefore we have
 # 1) 1 codi container named codi-test
