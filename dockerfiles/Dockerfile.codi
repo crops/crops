@@ -17,8 +17,8 @@ MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
 # Build and install CODI
 RUN mkdir -p /usr/local/crops/codi/
 COPY codi /usr/local/crops/codi/
-COPY utils.* /usr/local/crops/
-COPY globals.* /usr/local/crops/
+COPY utils.[ch] /usr/local/crops/
+COPY globals.[ch] /usr/local/crops/
 
 RUN	cd /usr/local/crops/codi && \
 	make && \

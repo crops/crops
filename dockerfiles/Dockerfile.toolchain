@@ -27,8 +27,8 @@ ENV TOOLCHAIN_PATH http://downloads.yoctoproject.org/releases/yocto/yocto-2.0/to
 # Build and install turff
 RUN mkdir -p /usr/local/crops/turff/
 COPY turff /usr/local/crops/turff/
-COPY utils.* /usr/local/crops/
-COPY globals.* /usr/local/crops/
+COPY utils.[ch] /usr/local/crops/
+COPY globals.[ch] /usr/local/crops/
 
 RUN cd /usr/local/crops/turff && \
 	make && \
