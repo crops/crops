@@ -37,7 +37,7 @@ RUN cd /usr/local/crops/turff && \
 	cp /usr/local/crops/turff/turff_launcher /bin/
 
 # Download and install toolchain
-RUN wget -P /tmp ${TOOLCHAIN_PATH}${TOOLCHAIN_NAME} && \
+RUN wget -q -P /tmp ${TOOLCHAIN_PATH}${TOOLCHAIN_NAME} && \
 	cd /tmp &&	\
 	chmod 755 ./${TOOLCHAIN_NAME} &&	\
 	./${TOOLCHAIN_NAME} -d /opt/poky/ -y

@@ -12,19 +12,19 @@ FROM ubuntu:14.04
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update -qq && apt-get install -y -qq \
 	libsqlite3-dev \
 	libjansson-dev	\
 	git	\
 	wget \
 	daemontools \
 	build-essential && \
-	apt-get upgrade -y
+	apt-get upgrade -y -qq
 
 #Install a version of curl with unix sockets support
-RUN wget -P /tmp http://curl.haxx.se/download/curl-7.45.0.tar.gz && \
+RUN wget -q -P /tmp http://curl.haxx.se/download/curl-7.45.0.tar.gz && \
 	cd /tmp && \
-	tar xvf curl-7.45.0.tar.gz && \
+	tar xf curl-7.45.0.tar.gz && \
 	cd curl-7.45.0 && \
 	./configure --prefix=/usr --enable-unix-sockets && \
 	make && \
