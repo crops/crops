@@ -45,7 +45,7 @@ void init_turff_params(){
 
   turff_ops[KEY('s')] = TURFF_PORT;
   turff_ops[KEY('v')] = VERSION;
-  turff_ops[KEY('i')] = CODI_IP;
+  turff_ops[KEY('i')] = CODI_IP_NATIVE;
   turff_ops[KEY('d')] = CODI_PORT;
   turff_ops[KEY('z')] = TURFF_NAME;
 }

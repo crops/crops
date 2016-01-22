@@ -28,17 +28,17 @@
 #define KEY(var) abs('a'- #var[1])
 
 
-#define CODI_PORT    "10000"
-#define CODI_IP      "127.0.0.1"
-#define TURFF_IP     "192.168.99.100"
-#define TURFF_PORT   "9999"
-#define MSG_TERM     "EOM"
-#define VERSION      "0.1"
-#define TURFF_EOM    "TEOM"
-#define CEED_NAME    "ceed"
-#define TURFF_NAME   "turff"
-#define CODI_NAME    "codi"
-#define TURFFID      "TURFFID"
+#define CODI_PORT      "10000"
+#define CODI_IP_NATIVE "127.0.0.1"
+#define CODI_IP_VIRT   "192.168.99.100"
+#define TURFF_PORT     "9999"
+#define MSG_TERM       "EOM"
+#define VERSION        "0.1"
+#define TURFF_EOM      "TEOM"
+#define CEED_NAME      "ceed"
+#define TURFF_NAME     "turff"
+#define CODI_NAME      "codi"
+#define TURFFID        "TURFFID"
 
 void info(const char *file, int line, const char *func, const char* fmt, ...);
 void debug(const char *file, int line, const char *func, const char* fmt, ...);

@@ -25,7 +25,7 @@ char *ceed_ops[KEY_ARR_SZ];
 void print_ceed_usage(int argc, char *argv[]) {
 
   printf("Usage: %s -p prj -i 192.168.99.100 -s 10000 -b\n", argv[0]);
-  printf("	-i CODI ip address [default: 127.0.0.1]\n");
+  printf("	-i CODI ip address [default: 127.0.0.1 (linux) or 192.168.99.100 (win/mac)]\n");
   printf("	-s CODI listening port [default: 10000]\n");
   printf("	-l list available build containers\n");
   printf("	-d container_id. Send command to container_id\n");
@@ -46,13 +46,15 @@ void print_ceed_usage(int argc, char *argv[]) {
 void init_ceed_params(){
 #if defined(_WIN32) || defined(__CYGWIN__)
   ceed_ops[KEY('a')] = "win";
+  ceed_ops[KEY('i')] = CODI_IP_VIRT;
 #elif __APPLE__
   ceed_ops[KEY('a')] = "mac";
+  ceed_ops[KEY('i')] = CODI_IP_VIRT;
 #elif __linux
   ceed_ops[KEY('a')] = "linux";
+  ceed_ops[KEY('i')] = CODI_IP_NATIVE;
 #endif
   ceed_ops[KEY('p')] = NULL;
-  ceed_ops[KEY('i')] = CODI_IP;
   ceed_ops[KEY('s')] = CODI_PORT;
   ceed_ops[KEY('v')] = VERSION;
   ceed_ops[KEY('r')] = " ";
