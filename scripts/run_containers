@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 # This is a sanity test script for the CODI and toolchain Docker images.
-# This removes the old test containers, and builds a new codi and 4 new test toolchains.
+# This runs the test containers.
 # Then it runs ceed -l to talk to codi to list the 4 test toolchains
-# If you do not have the deps containers, it will build them but this takes awhile
 #
 # Example:
 #
@@ -42,25 +41,3 @@ else
     ADDRESS=127.0.0.1
 fi
 ./ceed -i $ADDRESS -s 10000 -l
-
-
-
-II=0
-while [ $II -lt $NUM_TOOLCHAINS ]; do
-    Q=`docker ps | egrep toolchain-test${II} | awk '{print $1}'`
-    if [ "$Q"  != "" ]; then
-	echo "Removing toolchain container $II"
-	docker stop $Q || { echo 'docker stop toolchain-test${II} failed' ; exit 1; };
-	docker rm $Q || { echo 'docker rm toolchain-test${II} failed' ; exit 1; };
-    fi
-    let II=$II+1
-done
-
-
-echo "Stop and remove CODI test container"
-Q=`docker ps -a | egrep codi-test | awk '{print $1}'`
-if [ "$Q"  != "" ]; then
-    echo "Removing codi container"
-    docker stop $Q || { echo 'docker stop codi failed' ; exit 1; };
-    docker rm $Q || { echo 'docker rm codi failed' ; exit 1; };
-fi

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# This is a sanity test script for the CODI and toolchain Docker images.
+# This stops the test containers.
+#
+# Example:
+#
+# ./tests/stop_containers
+
+II=0
+Q=`docker ps | egrep toolchain-test${II} | awk '{print $1}'`
+while [ "$Q" != ""  ]; do
+    echo "Stop and Remove toolchain container $II"
+    docker stop -t 1 $Q || { echo 'docker stop toolchain-test${II} failed' ; exit 1; };
+    docker rm $Q || { echo 'docker rm toolchain-test${II} failed' ; exit 1; };
+    let II=$II+1
+    Q=`docker ps | egrep toolchain-test${II} | awk '{print $1}'`
+done
+
+echo "Stop and remove CODI test container"
+Q=`docker ps -a | egrep codi-test | awk '{print $1}'`
+if [ "$Q"  != "" ]; then
+    echo "Removing codi container"
+    docker stop -t 1 $Q || { echo 'docker stop codi failed' ; exit 1; };
+    docker rm $Q || { echo 'docker rm codi failed' ; exit 1; };
+fi
