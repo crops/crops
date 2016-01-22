@@ -15,7 +15,7 @@ def cmd_exists(cmd):
 
 def getDockerMachineAddress():
     machine_name=subprocess.check_output(['docker-machine','active'])
-    ADDRESS=subprocess.check_output(['docker-machine','ip',machine_name])
+    ADDRESS=subprocess.check_output(['docker-machine','ip',machine_name.strip()])
     return ADDRESS
 
 def getDockerAddress():
@@ -30,7 +30,7 @@ class CeedBasicTests(unittest.TestCase):
 
     def setUp(self):
         ''' Define some unique data for validation '''
-        self.dockerAddress = getDockerAddress()
+        self.dockerAddress = getDockerAddress().strip()
 
 
     def tearDown(self):
