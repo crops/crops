@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+
+# This is a convenience script to build the host side ceed for travis testing.
+# this is probably a more travisy way to do this so if you know it, speak up!
+
+TOPDIR=`git rev-parse --show-toplevel`
+
+cd ${TOPDIR}/ceed
+make
