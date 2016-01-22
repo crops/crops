@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+
+# This is a sanity test script for the CODI and toolchain Docker images.
+# This removes the old test containers, and builds a new codi and 4 new test toolchains.
+# Then it runs ceed -l to talk to codi to list the 4 test toolchains
+# If you do not have the deps containers, it will build them but this takes awhile
+#
+# Example:
+#
+# ./tests/build_containers [NUM_TOOLCHAIN CONATINERS TO START DEFAULT:4]
+
+TOPDIR=`git rev-parse --show-toplevel`
+NUM_TOOLCHAINS=4
+if [ "$1" != "" ]; then
+   NUM_TOOLCHAINS=$1
+fi
+
+# remove codi test image as we will rebuild it
+Q=`docker images  -q crops/codi:test`
+if [ "$Q"  != "" ]; then
+    echo "Removing codi image"
+    docker rmi -f $Q
+fi
+
+# remove toolchain test image as we will rebuild it
+Q=`docker images  -q crops/toolchain:test`
+if [ "$Q"  != "" ]; then
+    echo "Removing toolchain image"
+    docker rmi -f   $Q
+fi
+
+echo "Build CEED client"
+
+make clean -C ${TOPDIR}/ceed/; make -C ${TOPDIR}/ceed/
+
+cd ${TOPDIR}/dockerfiles;
+
+Q=`docker images  -q crops/codi:deps`
+if [ "$Q"  == "" ]; then
+    echo "Build CODI deps image"
+    docker build -t crops/codi:deps -f Dockerfile.codi.deps --rm=true ..
+fi
+
+
+echo "Build CODI test image"
+docker build -t crops/codi:test -f Dockerfile.codi --rm=true ..
+
+Q=`docker images  -q crops/toolchain:deps`
+if [ "$Q"  == "" ]; then
+    echo "Build toolchain deps image"
+    docker build -t crops/toolchain:deps -f Dockerfile.toolchain.deps  --rm=true ..
+
+fi
+
+echo "Build toolchain test image"
+docker build -t crops/toolchain:test -f Dockerfile.toolchain --rm=true ..

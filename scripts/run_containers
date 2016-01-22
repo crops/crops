@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+# This is a sanity test script for the CODI and toolchain Docker images.
+# This removes the old test containers, and builds a new codi and 4 new test toolchains.
+# Then it runs ceed -l to talk to codi to list the 4 test toolchains
+# If you do not have the deps containers, it will build them but this takes awhile
+#
+# Example:
+#
+# ./tests/run_containers [NUM_TOOLCHAIN CONATINERS TO START DEFAULT:4]
+
+TOPDIR=`git rev-parse --show-toplevel`
+NUM_TOOLCHAINS=4
+if [ "$1" != "" ]; then
+   NUM_TOOLCHAINS=$1
+fi
+
+echo "Start CODI container"
+docker run -d --name codi-test -v /var/run/docker.sock:/var/run/docker.sock --net=host crops/codi:test || \
+    { echo 'docker run codi failed' ; exit 1; }
+
+
+II=0
+while [ $II -lt $NUM_TOOLCHAINS ]; do
+    echo "Start toolchain container $II"
+    docker run -d --name toolchain-test${II} -v /crops/:/crops/ --env TURFFID=crops/toolchain:test${II} --net=host crops/toolchain:test || \
+    { echo 'docker run toolchain-test${II} failed' ; exit 1; }
+    let II=$II+1
+done
+
+echo "List containers known to CODI"
+sleep 3;
+cd ${TOPDIR}/ceed
+
+# if docker-machine exists then we are on a mac/windows and use the address of the vm we are running in
+# else localhost
+if [ -x "$(command -v docker-machine)" ]; then
+    NAME=`docker-machine active`
+    ADDRESS=`docker-machine ip ${NAME}`
+else
+    # linux can run over unix sockets rather than ip but ip is more cross platform
+    ADDRESS=127.0.0.1
+fi
+./ceed -i $ADDRESS -s 10000 -l
+
+
+
+II=0
+while [ $II -lt $NUM_TOOLCHAINS ]; do
+    Q=`docker ps | egrep toolchain-test${II} | awk '{print $1}'`
+    if [ "$Q"  != "" ]; then
+	echo "Removing toolchain container $II"
+	docker stop $Q || { echo 'docker stop toolchain-test${II} failed' ; exit 1; };
+	docker rm $Q || { echo 'docker rm toolchain-test${II} failed' ; exit 1; };
+    fi
+    let II=$II+1
+done
+
+
+echo "Stop and remove CODI test container"
+Q=`docker ps -a | egrep codi-test | awk '{print $1}'`
+if [ "$Q"  != "" ]; then
+    echo "Removing codi container"
+    docker stop $Q || { echo 'docker stop codi failed' ; exit 1; };
+    docker rm $Q || { echo 'docker rm codi failed' ; exit 1; };
+fi
