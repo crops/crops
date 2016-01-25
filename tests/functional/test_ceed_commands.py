@@ -65,24 +65,24 @@ class CeedCommandsTests(unittest.TestCase):
             successAll&=success
         self.assertTrue(successAll)
 
-    # This will be added when the -a flag is fixed
-    # def test_command_args_switch(self):
-    #     ''' Get Output from simple command using argument switch'''
-    #     SUBSTRING="/bin/bash"
-    #     try:
-    #         p = subprocess.Popen(["ceed/ceed","-i",self.dockerAddress,"-d",self.tbase+"0", "-a","bash","-g","which"],stdout=subprocess.PIPE)
-    #     except subprocess.CalledProcessError as e:
-    #         print e.output
-    #         self.assertTrue(False)
 
-    #     success=False
-    #     output=p.communicate()[0]
+    def test_command_args_switch(self):
+        ''' Get Output from simple command using argument switch'''
+        SUBSTRING="/bin/bash"
+        try:
+            p = subprocess.Popen(["ceed/ceed","-i",self.dockerAddress,"-d",self.tbase+"0", "-r","bash","-g","which"],stdout=subprocess.PIPE)
+        except subprocess.CalledProcessError as e:
+            print e.output
+            self.assertTrue(False)
 
-    #     for line in output.split('\n'):
-    #         if line.find(SUBSTRING) >= 0:
-    #             success=True
-    #             break
-    #     self.assertTrue(success)
+        success=False
+        output=p.communicate()[0]
+
+        for line in output.split('\n'):
+            if line.find(SUBSTRING) >= 0:
+                success=True
+                break
+        self.assertTrue(success)
 
 
     def test_command_env_inline(self):
