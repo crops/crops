@@ -2,6 +2,7 @@
 
 import unittest
 import re
+import ceedutil
 import subprocess
 
 
@@ -9,20 +10,7 @@ import subprocess
 # 1) 1 codi container named codi-test
 # 2) 4 toolchain containers named test-toolchain-test[0-3]
 
-def cmd_exists(cmd):
-    return subprocess.call ("command -v "+cmd,shell=True,
-                            stdout=subprocess.PIPE,stderr=subprocess.PIPE)==0
 
-def getDockerMachineAddress():
-    machine_name=subprocess.check_output(['docker-machine','active'])
-    ADDRESS=subprocess.check_output(['docker-machine','ip',machine_name.strip()])
-    return ADDRESS
-
-def getDockerAddress():
-    ADDRESS="127.0.0.1"
-    if cmd_exists('docker-machine'):
-        ADDRESS=getDockerMachineAddress()
-    return ADDRESS
 
 
 class CeedBasicTests(unittest.TestCase):
@@ -30,7 +18,10 @@ class CeedBasicTests(unittest.TestCase):
 
     def setUp(self):
         ''' Define some unique data for validation '''
-        self.dockerAddress = getDockerAddress().strip()
+        self.dockerAddress = ceedutil.getDockerAddress().strip()
+        self.tbase=ceedutil.ToolchainNameBase
+        self.tnum=ceedutil.ToolchainNumber
+        self.cPort=ceedutil.CodiPort
 
 
     def tearDown(self):
@@ -39,7 +30,7 @@ class CeedBasicTests(unittest.TestCase):
 
     def test_connect(self):
         ''' Connect to codi'''
-        SUBSTRING="Connected to CODI"
+        SUBSTRING="Connected to CODI on"
         try:
             p = subprocess.Popen(["ceed/ceed","-i",self.dockerAddress,"-l"],stdout=subprocess.PIPE)
         except subprocess.CalledProcessError as e:
@@ -55,11 +46,47 @@ class CeedBasicTests(unittest.TestCase):
                 break
         self.assertTrue(success)
 
+    def test_connect_with_port(self):
+        ''' Connect to codi'''
+        SUBSTRING="Connected to CODI on"
+        try:
+            p = subprocess.Popen(["ceed/ceed","-i",self.dockerAddress,"-s",str(self.cPort),"-l"],stdout=subprocess.PIPE)
+        except subprocess.CalledProcessError as e:
+            print e.output
+            self.assertTrue(False)
+
+        success=False
+        output=p.communicate()[0]
+
+        for line in output.split('\n'):
+            if line.find(SUBSTRING) >= 0:
+                success=True
+                break
+        self.assertTrue(success)
+
+    def test_connect_with_badport_shouldfail(self):
+        ''' Connect to codi'''
+        SUBSTRING="Connected to CODI on"
+        try:
+            p = subprocess.Popen(["ceed/ceed","-i",self.dockerAddress,"-s",str(self.cPort+1),"-l"],stdout=subprocess.PIPE)
+        except subprocess.CalledProcessError as e:
+            print e.output
+            self.assertTrue(False)
+
+        success=False
+        output=p.communicate()[0]
+
+        for line in output.split('\n'):
+            if line.find(SUBSTRING) >= 0:
+                success=True
+                break
+        self.assertFalse(success)
+
 
     def test_listContainers(self):
         ''' List all the toolchain Containers'''
         SUBSTRING1="TURFF"
-        SUBSTRING2="crops/toolchain:test"
+        SUBSTRING2=self.tbase
         EXPECTED_COUNT=4
         try:
             p = subprocess.Popen(["ceed/ceed","-i",self.dockerAddress,"-l"],stdout=subprocess.PIPE)
