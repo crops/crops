@@ -9,6 +9,10 @@
 # ./tests/run_containers [NUM_TOOLCHAIN CONATINERS TO START DEFAULT:4]
 
 TOPDIR=`git rev-parse --show-toplevel`
+# note, currently the turff node and the container name MUST match exactly or have matching formats
+# Example: TURFFID=repo/image:tag and container name repo-image-tag
+# The Docker API does not allow special characters in container names except '-'
+NAME_BASE="crops-toolchain-test"
 NUM_TOOLCHAINS=4
 if [ "$1" != "" ]; then
    NUM_TOOLCHAINS=$1
@@ -22,7 +26,7 @@ docker run -d --name codi-test -v /var/run/docker.sock:/var/run/docker.sock --ne
 II=0
 while [ $II -lt $NUM_TOOLCHAINS ]; do
     echo "Start toolchain container $II"
-    docker run -d --name toolchain-test${II} -v /crops/:/crops/ --env TURFFID=crops/toolchain:test${II} --net=host crops/toolchain:test || \
+    docker run -d --name ${NAME_BASE}${II} -v /crops/:/crops/ --env TURFFID=${NAME_BASE}${II} --net=host crops/toolchain:test || \
     { echo 'docker run toolchain-test${II} failed' ; exit 1; }
     let II=$II+1
 done
