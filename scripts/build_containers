@@ -12,10 +12,6 @@ set -o pipefail
 # ./tests/build_containers [NUM_TOOLCHAIN CONATINERS TO START DEFAULT:4]
 
 TOPDIR=`git rev-parse --show-toplevel`
-NUM_TOOLCHAINS=4
-if [ "$1" != "" ]; then
-   NUM_TOOLCHAINS=$1
-fi
 
 # remove codi test image as we will rebuild it
 Q=`docker images  -q crops/codi:test`
