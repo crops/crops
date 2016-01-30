@@ -14,9 +14,11 @@
  * more details.
  */
 
+#include "globals.h"
 #include <jansson.h>
 #include <string.h>
 #include <curl/curl.h>
+#include <ctype.h>
 #include "codi_launcher.h"
 
 /* execute the request and return an array of json objects */
@@ -196,7 +198,7 @@ bool container_exists(char *url, char *cont_name)
 bool download_img(char *url, char *repo_tag)
 {
   char *api_str = NULL, *repo, *tag, *tmp, *result;
-  asprintf(&repo, repo_tag);
+  asprintf(&repo, "%s", repo_tag);
   tmp = strchr(repo, ':');
 
   if (!tmp)
@@ -305,7 +307,7 @@ char *cont_definition = CONTAINER_PARAMS(
   }
 );
 
-  asprintf(&tmp_img, img);
+  asprintf(&tmp_img, "%s", img);
 
   /* container names cannot have special characters */
   /* replace non alpha numberical characters with dashes */
@@ -343,7 +345,7 @@ bool start_container(char *url, char *cont_name)
   int i;
   char *tmp_name;
 
-  asprintf(&tmp_name, cont_name);
+  asprintf(&tmp_name, "%s", cont_name);
 
   /* container names cannot have special characters */
   /* replace non alpha numberical characters with dashes */

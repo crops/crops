@@ -16,6 +16,10 @@
 
 #ifndef GLOBALS_H
 #define GLOBALS_H
+#ifdef __linux
+#define _GNU_SOURCE
+#endif
+
 
 #include <math.h>
 #include <stdarg.h>

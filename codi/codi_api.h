@@ -20,5 +20,6 @@
 #include "codi_list.h"
 
 int process_ceed_cmd(turff_node *t_node, int ceed_sock_fd, char *ceed_params[]);
+void parse_codi_params(int argc, char *argv[]);
 
 #endif

@@ -14,11 +14,11 @@
  * more details.
  */
 
+#include "globals.h"
 #include <stdlib.h>
 #include <signal.h>
 #include <netdb.h>
 #include "utils.h"
-#include "globals.h"
 #include "turff_api.h"
 
 #define PORT_RANGE 100

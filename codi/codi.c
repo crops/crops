@@ -14,13 +14,13 @@
  * more details.
  */
 
+#include "globals.h"
 #include <stdlib.h>
 #include <signal.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <pthread.h>
 #include "utils.h"
-#include "globals.h"
 #include "codi_db.h"
 #include "codi_api.h"
 #include "codi_list.h"
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
       && cli_params[KEY('d')] != NULL) {
 
       if (ceed_params_tmp[KEY('z')] == NULL) {
-        copy_params(cli_params, &ceed_params_tmp);
+        copy_params(cli_params, ceed_params_tmp);
         cli_sock_fd_tmp = dup(cli_sock_fd);
       }
 

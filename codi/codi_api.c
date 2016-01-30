@@ -14,9 +14,9 @@
  * more details.
  */
 
+#include "globals.h"
 #include <stdlib.h>
 #include <ctype.h>
-#include "globals.h"
 #include "utils.h"
 #include "codi_api.h"
 #include "codi_list.h"

@@ -14,13 +14,13 @@
  * more details.
  */
 
+#include "globals.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
 #include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
-#include "globals.h"
 #include "utils.h"
 
 const char workspace_root[] = "/crops";

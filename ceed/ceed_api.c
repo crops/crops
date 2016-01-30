@@ -14,11 +14,11 @@
  * more details.
  */
 
+#include "globals.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
-#include "globals.h"
 
 char *ceed_ops[KEY_ARR_SZ];
 

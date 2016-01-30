@@ -24,5 +24,7 @@ void receive_args(int sock_fd, char *params[]);
 struct addrinfo* connect_to_socket(char *ip_in, char *port_in, int* sock_fd_out);
 struct addrinfo* bind_to_socket(char *ip_in, const char *port_in, int* sock_fd_out);
 int redirect_sockets(int in_sock, int out_sock);
+void free_params(char *params[]);
+void copy_params(char *in[], char *out[]);
 
 #endif

@@ -14,9 +14,9 @@
  * more details.
  */
 
+#include "globals.h"
 #include <stdlib.h>
 #include <sqlite3.h>
-#include "globals.h"
 #include "codi_db.h"
 #include "codi_list.h"
 
