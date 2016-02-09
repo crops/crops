@@ -19,9 +19,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <netdb.h>
 #include <unistd.h>
+#if defined(_WIN32)
+#include <winsock2.h>
+#include <wspiapi.h>
+#else
+#include <netdb.h>
 #include <sys/select.h>
+#endif
 #include "utils.h"
 
 
@@ -43,7 +48,7 @@ int redirect_sockets(int in_sock, int out_sock) {
       while (size > 0) {
         received = recv(in_sock, buf, size, 0);
         if (received < 0 ){
-          ERROR("Error : %s\n", strerror(errno));
+          ERR("Error : %s\n", strerror(errno));
         } else if (received == 0) {
           break ;
         } else {
@@ -60,7 +65,7 @@ int redirect_sockets(int in_sock, int out_sock) {
     }
   } else if (ready < 0){
     free(buf);
-    ERROR("Select error\n");
+    ERR("Select error\n");
   }
   free(buf);
   return 0;
@@ -85,7 +90,7 @@ int send_data(int sock_fd, const void *buf, size_t size) {
     while (size > 0) {
       sent = send(sock_fd, buf, size, 0);
       if (sent == -1){
-        ERROR("Unable to send data. Error: [%d] %s", errno, strerror(errno));
+        ERR("Unable to send data. Error: [%d] %s", errno, strerror(errno));
       }
       else {
         size -= sent;
@@ -95,7 +100,7 @@ int send_data(int sock_fd, const void *buf, size_t size) {
       }
     }
   } else if (ready == -1){
-      ERROR("Select timeout\n");
+      ERR("Select timeout\n");
   }
   return 0;
 }
@@ -116,7 +121,7 @@ int receive_data(int sock_fd, void *buf, size_t size, int is_ceed, int *done) {
       while (size > 0) {
         received = recv(sock_fd, buf, size, 0);
         if (received < 0 ){
-          ERROR("Error : %s\n", strerror(errno));
+          ERR("Error : %s\n", strerror(errno));
         } else if (received == 0) {
           if (is_ceed)
             *done = 1;
@@ -139,7 +144,7 @@ int receive_data(int sock_fd, void *buf, size_t size, int is_ceed, int *done) {
       }
     }
   } else if (ready < 0){
-    ERROR("Select error : %s\n", strerror(errno));
+    ERR("Select error : %s\n", strerror(errno));
   }
 
   return 0;
@@ -245,8 +250,16 @@ struct addrinfo* connect_to_socket(char *ip_in, char *port_in, int* sock_fd_out)
   int sock_fd, result;
   struct addrinfo criteria, *srv_addr, *addr_p;
 
+#if defined(_WIN32)
+  WSADATA wsa_data;
+  int res = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+  if (res != 0) {
+    ERR("WSAStartup failed: %d\n", res);
+  }
+#endif
+
   /* connect to agent */
-  bzero(&criteria, sizeof(criteria));
+  memset(&criteria, 0, sizeof(criteria));
   criteria.ai_family = AF_INET;
   criteria.ai_socktype = SOCK_STREAM;
   criteria.ai_flags = 0;
@@ -255,8 +268,7 @@ struct addrinfo* connect_to_socket(char *ip_in, char *port_in, int* sock_fd_out)
   result = getaddrinfo(ip_in, port_in, &criteria,&srv_addr);
 
   if(result != 0) {
-    ERROR("Could not get address info list\n");
-    exit(EXIT_FAILURE);
+    ERR("Could not get address info list : %s\n", gai_strerror(result));
   }
 
   for(addr_p = srv_addr; addr_p != NULL; addr_p = addr_p->ai_next) {
@@ -281,7 +293,7 @@ struct addrinfo* bind_to_socket(char *ip_in, const char *port_in, int* sock_fd_o
   struct addrinfo *addr_p;
   int result, opt = 1;
 
-  bzero(&criteria, sizeof(criteria));
+  memset(&criteria, 0, sizeof(criteria));
   criteria.ai_family = AF_INET;
   criteria.ai_socktype = SOCK_STREAM;
   criteria.ai_flags = AI_PASSIVE;
@@ -293,7 +305,7 @@ struct addrinfo* bind_to_socket(char *ip_in, const char *port_in, int* sock_fd_o
   result = getaddrinfo(NULL, port_in, &criteria, &srv_addr);
 
   if (result != 0) {
-    ERROR("Could not get address info list\n");
+    ERR("Could not get address info list\n");
   }
 
   for (addr_p = srv_addr; addr_p != NULL; addr_p = addr_p->ai_next) {
@@ -306,7 +318,7 @@ struct addrinfo* bind_to_socket(char *ip_in, const char *port_in, int* sock_fd_o
       (char *)&opt, sizeof(opt)) < 0) {
 
       close(*sock_fd_out);
-      ERROR("setsockopt failed\n");
+      ERR("setsockopt failed\n");
     }
 
     if (bind(*sock_fd_out, addr_p->ai_addr, addr_p->ai_addrlen) == 0)

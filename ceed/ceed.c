@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
   addr_p = connect_to_socket(ceed_ops[KEY('i')], ceed_ops[KEY('s')], &sock_fd);
 
   if(addr_p == NULL) {
-    ERROR("Could not connect to CODI\n");
+    ERR("Could not connect to CODI\n");
   } else {
     INFO("Connected to CODI on %s port : %s\n",
       ceed_ops[KEY('i')], ceed_ops[KEY('s')]);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     done = 0;
 
     while(!done) {
-      bzero(ceed_out, BUFSIZ);
+      memset(ceed_out, 0, BUFSIZ);
       receive_data(sock_fd, ceed_out, BUFSIZ, 1, &done);
     }
     free(ceed_out);

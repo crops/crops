@@ -139,11 +139,11 @@ void parse_ceed_params(int argc, char *argv[]) {
       break;
     case '?':
       if (optopt == 'p' || optopt == 'i' || optopt == 's' || optopt == 'm')
-        ERROR("Option -%c requires an argument.\n", optopt);
+        ERR("Option -%c requires an argument.\n", optopt);
       else if (isprint(optopt))
-        ERROR("Unknown option `-%c'.\n", optopt);
+        ERR("Unknown option `-%c'.\n", optopt);
       else
-        ERROR("Unknown option character `\\x%x'.\n", optopt);
+        ERR("Unknown option character `\\x%x'.\n", optopt);
     default:
       print_ceed_usage(argc, argv);
     }

@@ -50,7 +50,7 @@ char *curl_request(char *http_method, char *url, char *api,  char *data)
   srv_reply.mem = calloc(1, 1) ;
 
   if (srv_reply.mem == NULL)
-    ERROR("ERROR: Unable to allocate memory");
+    ERR("ERROR: Unable to allocate memory");
 
   srv_reply.size = 0 ;
   curl = curl_easy_init();
@@ -114,7 +114,7 @@ size_t process_srv_reply(void *ptr, size_t size, size_t nmemb, void *reply_p)
   /* append chunk_size memory block to the original memory block */
   mem_chunk->mem = realloc(mem_chunk->mem, mem_chunk->size + chunk_size + 1);
   if (mem_chunk->mem == NULL)
-    ERROR("not enough memory (realloc returned NULL)\n");
+    ERR("not enough memory (realloc returned NULL)\n");
 
   INFO("%s", ptr);
 

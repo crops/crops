@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
   }
 
   if (addr_p == NULL) {
-    ERROR("Could not bind agent to socket\n");
+    ERR("Could not bind agent to socket\n");
     exit(EXIT_FAILURE);
   }
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     ceed_sock_fd = accept(sock_fd, &cli_addr, &cli_len);
 
     if (ceed_sock_fd < 0) {
-      ERROR("ERROR on accept");
+      ERR("ERROR on accept");
     }
 
     /* receive parameters from CODI */
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
       if (!strcmp(turff_ops[KEY('v')], codi_params[KEY('v')])) {
         /* process ceed requests */
         if (process_params(codi_params))
-          ERROR("ERROR processing ceed request\n");
+          ERR("ERROR processing ceed request\n");
       } else {
         INFO("Incompatible versions: TURFF[%s] - CODI[%s]\n",
         turff_ops[KEY('v')], codi_params[KEY('v')]);

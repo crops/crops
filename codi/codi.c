@@ -49,7 +49,7 @@ static void *listener_thread(void *args)
     cli_sock_fd = accept(codi_sock_fd, &cli_addr, &cli_len);
 
     if (cli_sock_fd < 0)
-      ERROR("ERROR on accept");
+      ERR("ERROR on accept");
 
     pthread_mutex_lock(&lock);
     free_params(cli_params);
@@ -89,12 +89,12 @@ int main(int argc, char *argv[]) {
     cli_params[i] = NULL;
 
   if (pthread_mutex_init(&lock, NULL) != 0)
-    ERROR("Mutex initialization failed\n");
+    ERR("Mutex initialization failed\n");
 
   addr_p = bind_to_socket(NULL, codi_port, &codi_sock_fd);
 
   if (addr_p == NULL) {
-    ERROR("Could not bind CODI to socket\n");
+    ERR("Could not bind CODI to socket\n");
   } else {
     INFO("CODI listening on port: %s\n", codi_port);
 
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
 
   /*start toolchain registration thread*/
   if (pthread_create(&reg_toolchain_thread, NULL, listener_thread, NULL)) {
-    ERROR("Unable to start socket listener thread\n");
+    ERR("Unable to start socket listener thread\n");
   }
 
   process_ok = 0;

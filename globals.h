@@ -49,7 +49,7 @@ void debug(const char *file, int line, const char *func, const char* fmt, ...);
 void error(const char *file, int line, const char *func, const char* fmt, ...);
 
 #define INFO(...)  info(__FILE__, __LINE__, __func__, __VA_ARGS__)
-#define ERROR(...) error(__FILE__, __LINE__, __func__, __VA_ARGS__)
+#define ERR(...) error(__FILE__, __LINE__, __func__, __VA_ARGS__)
 #define DEBUG(...) debug(__FILE__, __LINE__, __func__, __VA_ARGS__)
 
 typedef enum { false, true } bool;

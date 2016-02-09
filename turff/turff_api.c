@@ -233,7 +233,7 @@ int register_agent(char *turff_ops[]) {
 
   if(addr_p == NULL) {
     INFO("Please ensure that CODI is running\n");
-    ERROR("Could not connect to CODI\n");
+    ERR("Could not connect to CODI\n");
   } else {
     INFO("Connected to codi on %s:%s\n",
       turff_ops[KEY('i')], turff_ops[KEY('d')]);
