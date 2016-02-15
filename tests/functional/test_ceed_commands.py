@@ -2,15 +2,13 @@
 
 import unittest
 import re
-import ceedutil
 import subprocess
+import utils.ceedutil as ceedutil
 
 
 # This test set ASSUMES the initial scripts have been run and therefore we have
 # 1) 1 codi container named codi-test
 # 2) 4 toolchain containers named test-toolchain-test[0-3]
-
-
 
 
 class CeedCommandsTests(unittest.TestCase):

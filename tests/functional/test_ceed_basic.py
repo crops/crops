@@ -2,8 +2,8 @@
 
 import unittest
 import re
-import ceedutil
 import subprocess
+import utils.ceedutil as ceedutil
 
 
 # This test set ASSUMES the initial scripts have been run and therefore we have
@@ -22,7 +22,6 @@ class CeedBasicTests(unittest.TestCase):
         self.tbase=ceedutil.ToolchainNameBase
         self.tnum=ceedutil.ToolchainNumber
         self.cPort=ceedutil.CodiPort
-
 
     def tearDown(self):
         ''' Destroy unique data '''
