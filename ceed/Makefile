@@ -23,3 +23,12 @@ ceed: $(OBJ)
 clean:
 	rm -f $(OBJ) ceed *.exe
 
+windows:
+	docker ps -a --filter "name=ceed-windows" --format "{{.ID}}" | xargs -I {} docker rm -f {}
+	docker images --filter "label=name=ceed-windows" --format "{{.ID}}" | xargs -I {} docker rmi {}
+	cd ../dockerfiles; docker build -t crops/ceed:windows -f Dockerfile.ceed ../
+	docker run --name=ceed-windows crops/ceed:windows; mkdir -p ../outdir
+	docker cp ceed-windows:/usr/local/crops/ceed/ceed ../outdir/ceed.exe
+	docker ps -a --filter "name=ceed-windows" --format "{{.ID}}" | xargs -I {} docker rm -f {};
+	docker images --filter "label=name=ceed-windows" --format "{{.ID}}" | xargs -I {} docker rmi {}
+
