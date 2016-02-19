@@ -32,7 +32,9 @@ while getopts ":hf:" opt; do
 	esac
 done
 
-source $env_conf_file
+if [ -n "$env_conf_file" ]; then
+	source $env_conf_file
+fi
 
 if [ $? -eq 0 ] ; then
 	$SUPERVISE $EXEC
