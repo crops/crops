@@ -27,9 +27,12 @@ if [ "$Q"  != "" ]; then
     docker rmi -f   $Q
 fi
 
-echo "Build CEED client"
-
-make clean -C ${TOPDIR}/ceed/; make -C ${TOPDIR}/ceed/
+# remove Zephyr toolchain image as we will rebuild it
+Q=`docker images  -q crops/zephyr:test`
+if [ "$Q"  != "" ]; then
+    echo "Removing Zephyr toolchain image"
+    docker rmi -f   $Q
+fi
 
 cd ${TOPDIR}/dockerfiles;
 
@@ -47,8 +50,16 @@ Q=`docker images  -q crops/toolchain:deps`
 if [ "$Q"  == "" ]; then
     echo "Build toolchain deps image"
     docker build -t crops/toolchain:deps -f Dockerfile.toolchain.deps  --rm=true ..
-
 fi
 
 echo "Build toolchain test image"
 docker build -t crops/toolchain:test -f Dockerfile.toolchain --rm=true ..
+
+Q=`docker images  -q crops/zephyr:deps`
+if [ "$Q"  == "" ]; then
+    echo "Build Zephyr deps image"
+    docker build -t crops/zephyr:deps -f Dockerfile.zephyr.deps  --rm=true ..
+fi
+
+echo "Build Zephyr toolchain image"
+docker build -t crops/zephyr:test -f Dockerfile.zephyr --rm=true ..

@@ -15,33 +15,36 @@ TOPDIR=`git rev-parse --show-toplevel`
 NAME_BASE="crops-toolchain-test"
 NUM_TOOLCHAINS=4
 if [ "$1" != "" ]; then
-   NUM_TOOLCHAINS=$1
+  NUM_TOOLCHAINS=$1
 fi
 
 echo "Start CODI container"
 docker run -d --name codi-test -v /var/run/docker.sock:/var/run/docker.sock --net=host crops/codi:test || \
-    { echo 'docker run codi failed' ; exit 1; }
-
+  { echo 'docker run codi failed' ; exit 1; }
 
 II=0
 while [ $II -lt $NUM_TOOLCHAINS ]; do
-    echo "Start toolchain container $II"
-    docker run -d --name ${NAME_BASE}${II} -v /crops/:/crops/ --env TURFFID=${NAME_BASE}${II} --net=host crops/toolchain:test || \
-    { echo 'docker run toolchain-test${II} failed' ; exit 1; }
-    let II=$II+1
+  echo "Start toolchain container $II"
+  docker run -d --name ${NAME_BASE}${II} -v /crops/:/crops/ --env TURFFID=${NAME_BASE}${II} --net=host crops/toolchain:test || \
+  { echo 'docker run toolchain-test${II} failed' ; exit 1; }
+  let II=$II+1
 done
 
+echo "Start Zephyr toolchain container"
+docker run -d --name zephyr-test -v /crops/:/crops/ --env TURFFID=zephyr-test --net=host crops/zephyr:test || \
+  { echo 'docker run zephyr-test failed' ; exit 1; }
+
 echo "List containers known to CODI"
-sleep 3;
+sleep 5;
 cd ${TOPDIR}/ceed
 
 # if docker-machine exists then we are on a mac/windows and use the address of the vm we are running in
 # else localhost
 if [ -x "$(command -v docker-machine)" ]; then
-    NAME=`docker-machine active`
-    ADDRESS=`docker-machine ip ${NAME}`
+  NAME=`docker-machine active`
+  ADDRESS=`docker-machine ip ${NAME}`
 else
-    # linux can run over unix sockets rather than ip but ip is more cross platform
-    ADDRESS=127.0.0.1
+  # linux can run over unix sockets rather than ip but ip is more cross platform
+  ADDRESS=127.0.0.1
 fi
 ./ceed -i $ADDRESS -s 10000 -l
