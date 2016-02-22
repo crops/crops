@@ -19,6 +19,7 @@ script:
   - ./scripts/build_containers
   - docker images | grep codi | grep -q test
   - docker images | grep toolchain | grep -q test
+  - docker images | grep zephyr | grep -q test
   - ./scripts/run_containers
   - python tests.py
 
