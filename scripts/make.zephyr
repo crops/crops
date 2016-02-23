@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+CEED_EXE=./ceed/ceed
+CONTAINER=zephyr-test
+ZEPHYR_ENV="ZEPHYR_GCC_VARIANT=zephyr ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk ZEPHYR_BASE=/crops/zephyr-project/"
+ALL_PARAMS=$*
+
+if [ "$#" -eq 0 ]; then
+    echo $0: No parameters found
+    exit 1
+fi
+
+${CEED_EXE} -d ${CONTAINER} -g "${ZEPHYR_ENV} make ${ALL_PARAMS}"
