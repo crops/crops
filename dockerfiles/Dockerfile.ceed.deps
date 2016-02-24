@@ -10,6 +10,7 @@ MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-	mingw-w64 \
-	make
+  mingw-w64 \
+  gcc \
+  make
 

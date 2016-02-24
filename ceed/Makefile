@@ -26,8 +26,17 @@ clean:
 windows:
 	docker ps -a -q --filter "name=ceed-windows" | awk '{print $1}' | xargs -I {} docker rm -f {}
 	docker images -q --filter "label=name=ceed-windows" | awk '{print $1}' | xargs -I {} docker rmi {}
-	cd ../dockerfiles; docker build -t crops/ceed:windows -f Dockerfile.ceed ../
+	cd ../dockerfiles; docker build -t crops/ceed:windows -f Dockerfile.ceed.win ../
 	docker run --name=ceed-windows crops/ceed:windows; mkdir -p ../outdir
 	docker cp ceed-windows:/usr/local/crops/ceed/ceed ../outdir/ceed.exe
 	docker ps -a -q --filter "name=ceed-windows" | awk '{print $1}' | xargs -I {} docker rm -f {}
 	docker images -q --filter "label=name=ceed-windows" | awk '{print $1}' | xargs -I {} docker rmi {}
+
+linux:
+	docker ps -a -q --filter "name=ceed-linux" | awk '{print $1}' | xargs -I {} docker rm -f {}
+	docker images -q --filter "label=name=ceed-linux" | awk '{print $1}' | xargs -I {} docker rmi {}
+	cd ../dockerfiles; docker build -t crops/ceed:linux -f Dockerfile.ceed.linux ../
+	docker run --name=ceed-linux crops/ceed:linux; mkdir -p ../outdir
+	docker cp ceed-linux:/usr/local/crops/ceed/ceed ../outdir/ceed
+	docker ps -a -q --filter "name=ceed-linux" | awk '{print $1}' | xargs -I {} docker rm -f {}
+	docker images -q --filter "label=name=ceed-linux" | awk '{print $1}' | xargs -I {} docker rmi {}
