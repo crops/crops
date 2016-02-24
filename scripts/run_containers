@@ -25,12 +25,14 @@ docker run -d --name codi-test -v /var/run/docker.sock:/var/run/docker.sock --ne
 II=0
 while [ $II -lt $NUM_TOOLCHAINS ]; do
   echo "Start toolchain container $II"
+  sleep 2;
   docker run -d --name ${NAME_BASE}${II} -v /crops/:/crops/ --env TURFFID=${NAME_BASE}${II} --net=host crops/toolchain:test || \
   { echo 'docker run toolchain-test${II} failed' ; exit 1; }
   let II=$II+1
 done
 
 echo "Start Zephyr toolchain container"
+sleep 2;
 docker run -d --name zephyr-test -v /crops/:/crops/ --env TURFFID=zephyr-test --net=host crops/zephyr:test || \
   { echo 'docker run zephyr-test failed' ; exit 1; }
 
