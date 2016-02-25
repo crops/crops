@@ -33,7 +33,8 @@ done
 
 echo "Start Zephyr toolchain container"
 sleep 2;
-docker run -d --name zephyr-test -v /crops/:/crops/ --env TURFFID=zephyr-test --net=host crops/zephyr:test || \
+mkdir -p $HOME/crops-test-workspace
+docker run -d --name zephyr-test -v $HOME/crops-test-workspace/:/crops/ --env TURFFID=zephyr-test --net=host crops/zephyr:test || \
   { echo 'docker run zephyr-test failed' ; exit 1; }
 
 echo "List containers known to CODI"

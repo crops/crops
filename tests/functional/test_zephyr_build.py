@@ -19,7 +19,9 @@ class ZephyrBuildTest(unittest.TestCase):
         self.dockerAddress = ceedutil.getDockerAddress().strip()
         self.codiPort=ceedutil.CodiPort
         self.zephyrName="zephyr-test"
-        self.zephyrPrjPath="/crops/zephyr-project/samples/nanokernel/apps/hello_world/"
+        self.zephyrHostPath=os.environ['HOME']+"/crops-test-workspace/"
+        self.zephyrContainerPath="/crops/"
+        self.zephyrPrjPath="zephyr-project/samples/nanokernel/apps/hello_world/"
         self.zephyrBin="outdir/zephyr.bin"
         self.devnull=open(os.devnull, 'w')
 
@@ -31,7 +33,7 @@ class ZephyrBuildTest(unittest.TestCase):
         ''' Checkout Zephyr source'''
         SUBSTRING="Note: checking out"
         try:
-            subprocess.call(["rm","-rf","/crops/zephyr-project"],stdout=self.devnull)
+            subprocess.call(["rm","-rf",os.environ['HOME']+"/crops-test-workspace/zephyr-project"],stdout=self.devnull)
             subprocess.call(["ceed/ceed","-i",self.dockerAddress,"-d",self.zephyrName, "-s",str(self.codiPort),
                 "-g","git clone --branch v1.0.0 /zephyr-src /crops/zephyr-project"],stdout=self.devnull)
         except subprocess.CalledProcessError as e:
@@ -40,7 +42,7 @@ class ZephyrBuildTest(unittest.TestCase):
 
         success=False
 
-        if os.path.isdir(self.zephyrPrjPath):
+        if os.path.isdir(self.zephyrHostPath+self.zephyrPrjPath):
             success=True
 
         self.assertTrue(success)
@@ -49,15 +51,15 @@ class ZephyrBuildTest(unittest.TestCase):
         ''' Build X86 hello world application\n'''
         BOARD="arduino_101"
         try:
-            subprocess.call(["scripts/make.zephyr","pristine","BOARD="+BOARD,"-C",self.zephyrPrjPath],stdout=self.devnull)
-            subprocess.call(["scripts/make.zephyr","BOARD="+BOARD,"-C",self.zephyrPrjPath],stdout=self.devnull)
+            subprocess.call(["scripts/make.zephyr","pristine","BOARD="+BOARD,"-C",self.zephyrContainerPath+self.zephyrPrjPath],stdout=self.devnull)
+            subprocess.call(["scripts/make.zephyr","BOARD="+BOARD,"-C",self.zephyrContainerPath+self.zephyrPrjPath],stdout=self.devnull)
         except subprocess.CalledProcessError as e:
             print e.output
             self.assertTrue(False)
 
         success=False
 
-        if os.path.isfile(self.zephyrPrjPath + self.zephyrBin):
+        if os.path.isfile(self.zephyrHostPath+self.zephyrPrjPath + self.zephyrBin):
             success=True
 
         self.assertTrue(success)
@@ -67,15 +69,15 @@ class ZephyrBuildTest(unittest.TestCase):
         ''' Build ARM hello world application\n'''
         BOARD="arduino_due"
         try:
-            subprocess.call(["scripts/make.zephyr","pristine","BOARD="+BOARD,"-C",self.zephyrPrjPath],stdout=self.devnull)
-            subprocess.call(["scripts/make.zephyr","BOARD="+BOARD,"-C",self.zephyrPrjPath],stdout=self.devnull)
+            subprocess.call(["scripts/make.zephyr","pristine","BOARD="+BOARD,"-C",self.zephyrContainerPath+self.zephyrPrjPath],stdout=self.devnull)
+            subprocess.call(["scripts/make.zephyr","BOARD="+BOARD,"-C",self.zephyrContainerPath+self.zephyrPrjPath],stdout=self.devnull)
         except subprocess.CalledProcessError as e:
             print e.output
             self.assertTrue(False)
 
         success=False
 
-        if os.path.isfile(self.zephyrPrjPath + self.zephyrBin):
+        if os.path.isfile(self.zephyrHostPath+self.zephyrPrjPath + self.zephyrBin):
             success=True
 
         self.assertTrue(success)
@@ -85,15 +87,15 @@ class ZephyrBuildTest(unittest.TestCase):
         ''' Build ARC hello world application\n'''
         BOARD="arduino_101_sss"
         try:
-            subprocess.call(["scripts/make.zephyr","pristine","BOARD="+BOARD,"-C",self.zephyrPrjPath],stdout=self.devnull)
-            subprocess.call(["scripts/make.zephyr","BOARD="+BOARD,"-C",self.zephyrPrjPath],stdout=self.devnull)
+            subprocess.call(["scripts/make.zephyr","pristine","BOARD="+BOARD,"-C",self.zephyrContainerPath+self.zephyrPrjPath],stdout=self.devnull)
+            subprocess.call(["scripts/make.zephyr","BOARD="+BOARD,"-C",self.zephyrContainerPath+self.zephyrPrjPath],stdout=self.devnull)
         except subprocess.CalledProcessError as e:
             print e.output
             self.assertTrue(False)
 
         success=False
 
-        if os.path.isfile(self.zephyrPrjPath + self.zephyrBin):
+        if os.path.isfile(self.zephyrHostPath+self.zephyrPrjPath + self.zephyrBin):
             success=True
 
         self.assertTrue(success)
