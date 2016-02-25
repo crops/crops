@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
-CEED_EXE=./ceed/ceed
-CONTAINER=zephyr-test
+echo $CEED_EXE
+
+if [ -z "$CEED_EXE" ]; then
+  CEED_EXE=./ceed/ceed
+fi
+
+if [ -z "$TOOLCHAIN_CONTAINER" ]; then
+  TOOLCHAIN_CONTAINER=zephyr-test
+fi
+
 ZEPHYR_ENV="ZEPHYR_GCC_VARIANT=zephyr ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk ZEPHYR_BASE=/crops/zephyr-project/"
 ALL_PARAMS=$*
 
@@ -10,4 +18,4 @@ if [ "$#" -eq 0 ]; then
     exit 1
 fi
 
-${CEED_EXE} -d ${CONTAINER} -g "${ZEPHYR_ENV} make ${ALL_PARAMS}"
+${CEED_EXE} -d ${TOOLCHAIN_CONTAINER} -g "${ZEPHYR_ENV} make ${ALL_PARAMS}"
