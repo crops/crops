@@ -16,6 +16,7 @@ before_install:
 
 script:
   - ./scripts/build_ceed
+  - docker version
   - ./scripts/build_containers
   - docker images | grep codi | grep -q test
   - docker images | grep toolchain | grep -q test
