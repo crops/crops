@@ -18,10 +18,16 @@ if [ "$1" != "" ]; then
   NUM_TOOLCHAINS=$1
 fi
 
-echo "Start CODI container"
-docker run -d --name codi-test -v /var/run/docker.sock:/var/run/docker.sock --net=host crops/codi:test || \
-  { echo 'docker run codi failed' ; exit 1; }
 
+if [ "$DEBUG" == "" ]; then
+    echo "Start CODI container"
+    docker run -d --name codi-test -v /var/run/docker.sock:/var/run/docker.sock --net=host crops/codi:test || \
+	{ echo 'docker run codi failed' ; exit 1; }
+else
+    echo "Start DEBUG CODI container"
+    docker run -d --name codi-test-debug -v /var/run/docker.sock:/var/run/docker.sock --net=host crops/codi:testdebug || \
+	{ echo 'docker run codi failed' ; exit 1; }
+fi
 II=0
 while [ $II -lt $NUM_TOOLCHAINS ]; do
   echo "Start toolchain container $II"

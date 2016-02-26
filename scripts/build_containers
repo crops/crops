@@ -20,6 +20,12 @@ if [ "$Q"  != "" ]; then
     docker rmi -f $Q
 fi
 
+Q=`docker images  -q crops/codi:testdebug`
+if [ "$Q"  != "" ]; then
+    echo "Removing codi debug image"
+    docker rmi -f $Q
+fi
+
 # remove toolchain test image as we will rebuild it
 Q=`docker images  -q crops/toolchain:test`
 if [ "$Q"  != "" ]; then
@@ -45,6 +51,9 @@ fi
 
 echo "Build CODI test image"
 docker build -t crops/codi:test -f Dockerfile.codi --rm=true ..
+
+echo "Build CODI debug test image"
+docker build -t crops/codi:testdebug --build-arg build_type=debug -f Dockerfile.codi --rm=true ..
 
 Q=`docker images  -q crops/toolchain:deps`
 if [ "$Q"  == "" ]; then
