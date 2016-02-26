@@ -7,11 +7,24 @@ sudo: required
 services:
   - docker
 
+services:
+    - docker
+
+env:
+    global:
+        - DOCKER_VERSION=1.10.1-0~trusty
+
+
 compiler:
   - gcc
   - clang
 
 before_install:
+  # list docker-engine versions
+  - apt-cache madison docker-engine
+
+  # upgrade docker-engine to specific version
+  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
 
 
 script:
