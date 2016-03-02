@@ -13,6 +13,7 @@ VM_NAME=default
 CEED_EXE=$HOME/.crops/ceed/ceed
 MAKE_PATH=$HOME/.crops
 WIN_PLATFORM="msys"
+LINUX_PLATFORM="linux"
 MAC_PLATFORM="darwin"
 
 echo -e "\n"
@@ -181,11 +182,17 @@ fi
 
 echo -e "\n\nTHE CROPS ENVIRONMENT HAS BEEN SET UP"
 
-export CEED_EXE=$CEED_EXE
-export ZEPHYR_CONTAINER=$ZEPHYR_CONTAINER
+if [[ "echo "${OSTYPE}" | tr '[:upper:]' '[:lower:]'" != *$LINUX_PLATFORM* ]]; then
+  MACHINE=`docker-machine active`
+  IP=`docker-machine ip $MACHINE`
+  CEED_EXE="$CEED_EXE -i $IP"
+fi
 
 echo -e "\nInitialize Zephyr environment for CLI use"
 echo -e "Example :\n${CEED_EXE} -d ${ZEPHYR_CONTAINER} -g \"git clone --branch v1.0.0 /zephyr-src /crops/zephyr-project/\""
 
 echo -e "\nYou can now build Zephyr applications from the CLI"
 echo -e "Example :\n$MAKE_PATH/make.zephyr BOARD=arduino_101 -C /crops/zephyr-project/samples/nanokernel/apps/hello_world/"
+
+export CEED_EXE=$CEED_EXE
+export ZEPHYR_CONTAINER=$ZEPHYR_CONTAINER
