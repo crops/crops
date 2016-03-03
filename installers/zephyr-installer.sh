@@ -16,6 +16,16 @@ WIN_PLATFORM="msys"
 LINUX_PLATFORM="linux"
 MAC_PLATFORM="darwin"
 
+if [ "`which docker`" = "" ]; then
+    echo -e "Please install docker first, then run this installer"
+    if [[ "echo "${OSTYPE}" | tr '[:upper:]' '[:lower:]'" = *$LINUX_PLATFORM* ]]; then
+	echo -e "From: https://docs.docker.com/linux/step_one/"
+    else
+	echo -e "From: https://www.docker.com/products/docker-toolbox"
+    fi
+    return 1
+fi
+
 echo -e "\n"
 read -p "This will remove existing CROPS containers. Answering No will exit the installer. Proceed? Y/N " -r
 echo
