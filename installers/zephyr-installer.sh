@@ -103,16 +103,18 @@ mkdir -p $HOME/crops-workspace; echo -e "\nPlatform is $OSTYPE"
 
 if [[ "echo "${OSTYPE}" | tr '[:upper:]' '[:lower:]'" == *$MAC_PLATFORM* ]]; then
   if [[ ! -f "$CEED_EXE" ]]; then
-    echo -e "\nRebuild CEED executable from source and install it in $CEED_EXE"
-    echo -e "Example:\ngit clone https://github.com/todorez/crops"
-    echo -e "\ncd crops/ceed; make; cp ceed/ceed $CEED_EXE"
+    echo -e "Downloading CEED executable for Mac..."
+    mkdir -p $HOME/.crops/ceed/
+    curl -s -o $CEED_EXE http://crops.minchev.co.uk/ceed/mac/ceed
+    chmod 755 $CEED_EXE
+    echo -e "Done."
   fi
 
   if [[ ! -f "$MAKE_PATH/make.zephyr" ]]; then
     echo -e "Downloading Zephyr CLI make utility..."
     curl -s -o $MAKE_PATH/make.zephyr https://raw.githubusercontent.com/todorez/crops/master/scripts/make.zephyr
     chmod 755 $MAKE_PATH/make.zephyr
-    echo -e "done."
+    echo -e "Done."
   fi
 else
   if [[ -f "$CEED_EXE" ]]; then
