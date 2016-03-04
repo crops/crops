@@ -15,15 +15,28 @@ MAKE_PATH=$HOME/.crops
 WIN_PLATFORM="msys"
 LINUX_PLATFORM="linux"
 MAC_PLATFORM="darwin"
+unset MY_PLATFORM
+
+# establish platform
+if [[ "echo "${OSTYPE}" | tr '[:upper:]' '[:lower:]'" = *$LINUX_PLATFORM* ]]; then
+  MY_PLATFORM=$LINUX_PLATFORM
+elif [[ "echo "${OSTYPE}" | tr '[:upper:]' '[:lower:]'" == *$MAC_PLATFORM* ]]; then
+  MY_PLATFORM=$MAC_PLATFORM
+elif [[ "echo "${OSTYPE}" | tr '[:upper:]' '[:lower:]'" == *$WIN_PLATFORM* ]]; then
+  MY_PLATFORM=$WIN_PLATFORM
+else
+  echo "Unknown platform: $OSTYPE. Exiting"; return 1
+fi
+echo -e "\nPlatform is $MY_PLATFORM"
 
 if [ "`which docker`" = "" ]; then
-    echo -e "Please install docker first, then run this installer"
-    if [[ "echo "${OSTYPE}" | tr '[:upper:]' '[:lower:]'" = *$LINUX_PLATFORM* ]]; then
-	echo -e "From: https://docs.docker.com/linux/step_one/"
-    else
-	echo -e "From: https://www.docker.com/products/docker-toolbox"
-    fi
-    return 1
+  echo -e "\nPlease install docker first, then run this installer"
+  if [[ $MY_PLATFORM = $LINUX_PLATFORM ]]; then
+    echo -e "\nFrom: https://docs.docker.com/linux/step_one/"
+  else
+    echo -e "\nFrom: https://www.docker.com/products/docker-toolbox"
+  fi
+  return 1
 fi
 
 echo -e "\n"
@@ -37,7 +50,7 @@ else
   docker ps -a | awk '{ print $1,$2 }' | grep $CODI_IMG | awk '{print $1 }' | xargs -I {} docker rm -f {}
   echo -e "Done"
 
-  echo -e "\nRemove existing zephyr container"
+  echo -e "\nRemove existing Zephyr container"
   docker ps -a | awk '{ print $1,$2 }' | grep $ZEPHYR_IMG | awk '{print $1 }' | xargs -I {} docker rm -f {}
   echo -e "Done"
 fi
@@ -109,9 +122,9 @@ docker run -d --name $ZEPHYR_CONTAINER  -e TURFFID=$ZEPHYR_CONTAINER -v $HOME/cr
   --net=host $ZEPHYR_IMG || { echo 'Couldn't start $ZEPHYR_CONTAINER\' ; return 1; }
 echo -e "Done"
 
-mkdir -p $HOME/crops-workspace; echo -e "\nPlatform is $OSTYPE"
+mkdir -p $HOME/crops-workspace;
 
-if [[ "echo "${OSTYPE}" | tr '[:upper:]' '[:lower:]'" == *$MAC_PLATFORM* ]]; then
+if [[ $MY_PLATFORM == $MAC_PLATFORM ]]; then
   if [[ ! -f "$CEED_EXE" ]]; then
     echo -e "Downloading CEED executable for Mac..."
     mkdir -p $HOME/.crops/ceed/
@@ -137,7 +150,7 @@ else
       echo -e "Done"
 
       git clone https://github.com/todorez/crops.git; cd crops/dockerfiles;
-      if [[ "${OSTYPE,,}" == *"$WIN_PLATFORM"* ]]; then
+      if [[ $MY_PLATFORM == $WIN_PLATFORM ]]; then
         echo -e "\nBuilding CEED executable"
         docker ps -a -q --filter "name=ceed-windows" | awk '{print $1}' | xargs -I {} docker rm -f {}
         docker images -q --filter "label=name=ceed-windows" | awk '{print $1}' | xargs -I {} docker rmi {}
@@ -166,7 +179,7 @@ else
     else
       mkdir -p $HOME/.crops/ceed
       git clone https://github.com/todorez/crops.git; cd crops/dockerfiles;
-      if [[ "${OSTYPE,,}" == *"$WIN_PLATFORM"* ]]; then
+      if [[ $MY_PLATFORM == $WIN_PLATFORM ]]; then
         echo -e "\nBuilding CEED executable"
         docker ps -a -q --filter "name=ceed-windows" | awk '{print $1}' | xargs -I {} docker rm -f {}
         docker images -q --filter "label=name=ceed-windows" | awk '{print $1}' | xargs -I {} docker rmi {}
@@ -194,7 +207,7 @@ fi
 
 echo -e "\n\nTHE CROPS ENVIRONMENT HAS BEEN SET UP"
 
-if [[ "echo "${OSTYPE}" | tr '[:upper:]' '[:lower:]'" != *$LINUX_PLATFORM* ]]; then
+if [[ $MY_PLATFORM != $LINUX_PLATFORM ]]; then
   MACHINE=`docker-machine active`
   IP=`docker-machine ip $MACHINE`
   CEED_EXE="$CEED_EXE -i $IP"
