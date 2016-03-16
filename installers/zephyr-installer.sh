@@ -170,7 +170,8 @@ else
         docker ps -a -q --filter "name=ceed-linux" | awk '{print $1}' | xargs -I {} docker rm -f {}
         docker images -q --filter "label=name=ceed-linux" | awk '{print $1}' | xargs -I {} docker rmi {}
       fi
-      cd ../../; cp -fp ./crops/scripts/make.zephyr $MAKE_PATH/; rm -rf ./crops
+      cd ../../; cp -fp ./crops/scripts/make.zephyr $MAKE_PATH/
+      cp -fp ./crops/scripts/gdb.zephyr $MAKE_PATH/; rm -rf ./crops
     fi
   else
     read -p "Do you want to install CEED? Y/N " -r; echo
@@ -200,7 +201,8 @@ else
         docker images -q --filter "label=name=ceed-linux" | awk '{print $1}' | xargs -I {} docker rmi {}
         echo -e "Done"
       fi
-      cd ../../; cp -fp ./crops/scripts/make.zephyr $MAKE_PATH/; rm -rf ./crops
+      cd ../../; cp -fp ./crops/scripts/make.zephyr $MAKE_PATH/;
+      cp -fp ./crops/scripts/gdb.zephyr $MAKE_PATH/; rm -rf ./crops
     fi
   fi
 fi
