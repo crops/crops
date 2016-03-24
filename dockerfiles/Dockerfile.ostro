@@ -1,0 +1,23 @@
+# This file describes the standard way to build an Ostro bitbake builder image
+#
+# Usage:
+#
+# docker build -t ostro/bitbake:builder -f Dockerfile.ostro .
+#
+
+FROM ostro/bitbake:deps
+MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
+
+USER root
+
+RUN wget -O /home/yoctobuilder/runbitbake.py \
+  https://raw.githubusercontent.com/todorez/crops/master/helpers/runbitbake.py && \
+  chown -R yoctobuilder /home/yoctobuilder/ && \
+  chmod +x /home/yoctobuilder/runbitbake.py
+
+RUN git clone https://github.com/ostroproject/ostro-os.git /home/yoctobuilder/ostro-os
+
+USER yoctobuilder
+
+WORKDIR /home/yoctobuilder
+ENTRYPOINT ["/home/yoctobuilder/runbitbake.py"]
