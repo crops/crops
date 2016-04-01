@@ -42,8 +42,15 @@ RUN wget -q -P /tmp ${TOOLCHAIN_PATH}${TOOLCHAIN_NAME} && \
 	./${TOOLCHAIN_NAME} && \
 	rm -rf ./${TOOLCHAIN_NAME}
 
-#Link /bin/sh to bash
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+#Linkups
+# /bin/sh to bash
+# easy to use gdb to various architectures
+# NOTE: in future we will probably split these into separate toolchain containers
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh && \
+    ln -s /opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/bin/i586-poky-elf/i586-poky-elf-gdb /usr/bin/zephyr-i586-gdb && \
+    ln -s /opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/bin/arm-poky-eabi/arm-poky-eabi-gdb /usr/bin/zephyr-arm-gdb && \
+    ln -s /opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/bin/arc-poky-elf/arc-poky-elf-gdb /usr/bin/zephyr-arc-gdb && \
+    ln -s /opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/bin/mips-poky-elf/mips-poky-elf-gdb /usr/bin/zephyr-mips-gdb
 
 #Create Zephyr bare clone
 RUN git clone --bare https://gerrit.zephyrproject.org/r/zephyr /zephyr-src
