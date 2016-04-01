@@ -3,13 +3,12 @@ set -e
 set -o pipefail
 
 # This is a sanity test script for the CODI and toolchain Docker images.
-# This removes the old test containers, and builds a new codi and 4 new test toolchains.
-# Then it runs ceed -l to talk to codi to list the 4 test toolchains
+# This removes the old test containers, and builds a new codi and new toolchains.
 # If you do not have the deps containers, it will build them but this takes awhile
 #
 # Example:
 #
-# ./tests/build_containers [NUM_TOOLCHAIN CONATINERS TO START DEFAULT:4]
+# ./tests/build_containers
 
 TOPDIR=`git rev-parse --show-toplevel`
 
