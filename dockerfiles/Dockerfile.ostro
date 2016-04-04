@@ -17,7 +17,5 @@ RUN wget -O /home/yoctobuilder/runbitbake.py \
 
 RUN git clone https://github.com/ostroproject/ostro-os.git /home/yoctobuilder/ostro-os
 
-USER yoctobuilder
-
 WORKDIR /home/yoctobuilder
-ENTRYPOINT ["/home/yoctobuilder/runbitbake.py"]
+ENTRYPOINT ["sudo -H -u yoctobuilder /home/yoctobuilder/runbitbake.py"]
