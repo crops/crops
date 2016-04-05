@@ -22,7 +22,8 @@ RUN apt-get update && apt-get install -y \
   socat \
   python \
   libsdl1.2-dev  \
-  cpio && \
+  cpio \
+  sudo && \
   apt-get clean && \
   useradd -U -m yoctobuilder
 

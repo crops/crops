@@ -1,0 +1,9 @@
+#!/bin/bash
+
+usermod -u $HUID -g $HGID yoctobuilder
+chown -R $HUID /home/yoctobuilder/shared
+chgrp -R $HGID /home/yoctobuilder/shared
+
+sudo -H -u yoctobuilder /home/yoctobuilder/runbitbake.py $@
+
+

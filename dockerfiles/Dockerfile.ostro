@@ -12,10 +12,13 @@ USER root
 
 RUN wget -O /home/yoctobuilder/runbitbake.py \
   https://raw.githubusercontent.com/todorez/crops/master/helpers/runbitbake.py && \
+  wget -O /usr/bin/run_build.ostro \
+  https://raw.githubusercontent.com/todorez/crops/master/scripts/run_build.ostro && \
   chown -R yoctobuilder /home/yoctobuilder/ && \
-  chmod +x /home/yoctobuilder/runbitbake.py
+  chmod +x /home/yoctobuilder/runbitbake.py && \
+  chmod +x /usr/bin/run_build.ostro
 
 RUN git clone https://github.com/ostroproject/ostro-os.git /home/yoctobuilder/ostro-os
 
 WORKDIR /home/yoctobuilder
-ENTRYPOINT ["sudo -H -u yoctobuilder /home/yoctobuilder/runbitbake.py"]
+ENTRYPOINT ["/usr/bin/run_build.ostro"]
