@@ -2,11 +2,11 @@
 
 OSTRO_CONTAINER=ostro-builder
 OSTRO_IMG=ostro/bitbake:builder
-POKY_DIR=/home/yoctobuilder/ostro-os/
-EXTRA_CONF=/home/yoctobuilder/shared/conf/ostro.conf
-BUILD_DIR=/home/yoctobuilder/build/
+POKY_DIR=/ostro/ostro-os/
+EXTRA_CONF=ostro/ostro-shared/conf/ostro.conf
+BUILD_DIR=/ostro/build/
 
-DOCKER_CMD="docker run --rm --name $OSTRO_CONTAINER -v $HOME/ostro-workspace/shared:/home/yoctobuilder/shared --net=host $OSTRO_IMG --pokydir $POKY_DIR --extraconf $EXTRA_CONF -b $BUILD_DIR -t"
+DOCKER_CMD="docker run --rm --name $OSTRO_CONTAINER -v `pwd`/ostro-shared:/ostro/ostro-shared --net=host $OSTRO_IMG --pokydir $POKY_DIR --extraconf $EXTRA_CONF -b $BUILD_DIR -t"
 PARAMS=$1
 
 ${DOCKER_CMD} ${PARAMS} || { echo -e "\nCouldn't start $OSTRO_CONTAINER container\n" ; exit 1; }
