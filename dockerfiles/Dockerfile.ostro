@@ -10,14 +10,15 @@ MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
 
 USER root
 
-RUN wget -O /home/yoctobuilder/runbitbake.py \
-  https://raw.githubusercontent.com/todorez/crops/master/helpers/runbitbake.py && \
-  chown -R yoctobuilder /home/yoctobuilder/ && \
-  chmod +x /home/yoctobuilder/runbitbake.py
+RUN  mkdir -p /ostro/bin && \ 
+     mkdir -p /ostro/sample-conf && \
+     chmod -R a+rwx /ostro
+COPY helpers/runbitbake.py /ostro/bin/runbitbake.py
+COPY helpers/startOstroScript.sh /ostro/bin/startOstroScript.sh
+COPY confs/ostro/ostro.conf /ostro/sample-conf/ostro.conf
 
-RUN git clone https://github.com/ostroproject/ostro-os.git /home/yoctobuilder/ostro-os
+RUN   chmod +rx /ostro/bin/runbitbake.py && \
+      chmod +rx /ostro/bin/startOstroScript.sh && \
+      git clone https://github.com/ostroproject/ostro-os.git /ostro/ostro-os
 
-USER yoctobuilder
-
-WORKDIR /home/yoctobuilder
-ENTRYPOINT ["/home/yoctobuilder/runbitbake.py"]
+ENTRYPOINT ["/ostro/bin/startOstroScript.sh"]
