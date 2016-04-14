@@ -6,5 +6,7 @@ OSTRO_IMG=bavery/bitbake:builder
 DOCKER_CMD="docker run --rm --name $OSTRO_CONTAINER -v `pwd`/ostro-shared:/ostro/ostro-shared --net=host $OSTRO_IMG"
 PARAMS=$1
 
+# make sure the shared directory exists
+mkdir -p `pwd`/ostro-shared
 ${DOCKER_CMD} ${PARAMS} || { echo -e "\nCouldn't start $OSTRO_CONTAINER container\n" ; exit 1; }
 
