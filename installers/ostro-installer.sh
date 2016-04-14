@@ -8,7 +8,7 @@ fi
 OSTRO_IMG=ostro/bitbake:builder
 OSTRO_CONTAINER=ostro-builder
 OSTRO_CONF=$HOME/ostro-workspace/shared/conf/ostro.conf
-BITBAKE_WRAPPER=$HOME/bitbake.ostro
+BITBAKE_WRAPPER=$HOME/.crops/bitbake.ostro
 WIN_PLATFORM="msys"
 LINUX_PLATFORM="linux"
 MAC_PLATFORM="darwin"
@@ -81,28 +81,7 @@ if [[ "$(docker images -q $OSTRO_IMG 2> /dev/null)" == "" ]]; then
   echo "OSTRO build image not found. Exiting installer"; return 1
 fi
 
-mkdir -p $HOME/ostro-workspace/shared/conf && mkdir -p $HOME/ostro-workspace/shared/images;
-mkdir -p $HOME/ostro-workspace/shared/downloads && mkdir -p $HOME/ostro-workspace/shared/sstate;
-
-if [[ -f "$OSTRO_CONF" ]]; then
-  read -p "OSTRO configuration found. Do you want to install default OSTRO configuration file? Y/N " -r; echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo -e "\nOSTRO configuration file was not updated"
-  else
-    echo -e "\nBacked up existing OSTRO configuration file"
-		NOW=`date +%Y-%m-%d.%H:%M:%S`
-    mv $OSTRO_CONF $OSTRO_CONF.$NOW
-	  echo -e "Downloading default OSTRO configuration."
-    curl -k -s -o $OSTRO_CONF https://raw.githubusercontent.com/todorez/crops/master/confs/ostro/ostro.conf
-    chmod 755 $OSTRO_CONF
-    echo -e "Done."
-  fi
-else
-  echo -e "Downloading default OSTRO configuration."
-  curl -k -s -o $OSTRO_CONF https://raw.githubusercontent.com/todorez/crops/master/confs/ostro/ostro.conf
-  chmod 755 $OSTRO_CONF
-  echo -e "Done."
-fi
+mkdir -p $HOME/.crops
 
 if [[ -f "$BITBAKE_WRAPPER" ]]; then
   read -p "OSTRO bitbake wrapper found. Do you want to reinstall bitbake wrapper? Y/N " -r; echo
@@ -121,8 +100,9 @@ else
   chmod 755 $BITBAKE_WRAPPER
   echo -e "Done."
 fi
+export PATH=$PATH:$HOME/.crops
 
 echo -e "\n\nTHE OSTRO BUILD ENVIRONMENT HAS BEEN SET UP"
 
 echo -e "\nYou can now build ostro-os from the CLI\n"
-echo -e "Example :\n$HOME/bitbake.ostro ostro-image\n"
+echo -e "Example :\nbitbake.ostro ostro-image-noswupd\n"
