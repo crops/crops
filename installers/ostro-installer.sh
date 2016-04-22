@@ -5,7 +5,7 @@ if [[ "$(basename -- "$0")" == "ostro-installer.sh" ]]; then
   echo -e "\nExample:\nsource $0\n"; exit 1
 fi
 
-OSTRO_IMG=bavery/bitbake:builder
+OSTRO_IMG=crops/ostro:builder
 OSTRO_CONTAINER=ostro-builder
 OSTRO_CONF=$HOME/ostro-workspace/shared/conf/ostro.conf
 BITBAKE_WRAPPER=$HOME/.crops/bitbake.ostro
@@ -90,13 +90,13 @@ if [[ -f "$BITBAKE_WRAPPER" ]]; then
   else
     rm -rf $BITBAKE_WRAPPER
 	  echo -e "Downloading default OSTRO bitbake wrapper"
-    curl -k -s -o $BITBAKE_WRAPPER https://raw.githubusercontent.com/bavery22/crops/RootUidWrapperScript/scripts/bitbake.ostro 
+    curl -k -s -o $BITBAKE_WRAPPER https://raw.githubusercontent.com/crops/crops/master/scripts/bitbake.ostro
     chmod 755 $BITBAKE_WRAPPER
     echo -e "Done."
   fi
 else
   echo -e "Downloading OSTRO bitbake wrapper"
-  curl -k -s -o $BITBAKE_WRAPPER https://raw.githubusercontent.com/bavery22/crops/RootUidWrapperScript/scripts/bitbake.ostro 
+  curl -k -s -o $BITBAKE_WRAPPER https://raw.githubusercontent.com/crops/crops/master/scripts/bitbake.ostro
   chmod 755 $BITBAKE_WRAPPER
   echo -e "Done."
 fi
