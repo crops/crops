@@ -5,7 +5,7 @@ set -o pipefail
 
 # This removes the old test containers, and builds a new ostro container.
 # If you do not have the deps containers, it will build them but this takes awhile
-# it does NOT remove the deps images 
+# it does NOT remove the deps images
 #
 # Example:
 #
@@ -14,7 +14,7 @@ set -o pipefail
 TOPDIR=`git rev-parse --show-toplevel`
 
 # remove ostro builder image as we will rebuild it
-Q=`docker images  -q ostro/bitbake:builder`
+Q=`docker images  -q crops/ostro:builder`
 if [ "$Q"  != "" ]; then
     echo "Removing ostro image"
     docker rmi -f $Q
@@ -22,14 +22,14 @@ fi
 
 cd ${TOPDIR}/dockerfiles;
 
-Q=`docker images  -q ostro/bitbake:deps`
+Q=`docker images  -q crops/ostro:deps`
 if [ "$Q"  == "" ]; then
     echo "Build ostro deps image"
-    docker build -t ostro/bitbake:deps -f Dockerfile.ostro.deps --rm=true ..
+    docker build -t crops/ostro:deps -f Dockerfile.ostro.deps --rm=true ..
 fi
-Q=`docker images  -q ostro/bitbake:builder`
+Q=`docker images  -q crops/ostro:builder`
 if [ "$Q"  == "" ]; then
     echo "Build ostro builder image"
-    docker build -t ostro/bitbake:builder -f Dockerfile.ostro --rm=true ..
+    docker build -t crops/ostro:builder -f Dockerfile.ostro --rm=true ..
 fi
 
