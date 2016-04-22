@@ -2,7 +2,7 @@
 #
 # Usage:
 #
-# docker build -t ostro/bitbake:deps -f Dockerfile.ostro.deps .
+# docker build -t crops/ostro:deps -f Dockerfile.ostro.deps .
 
 FROM debian:jessie
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
@@ -23,7 +23,8 @@ RUN apt-get update && apt-get install -y \
   python \
   libsdl1.2-dev  \
   cpio \
-  sudo && \
+  sudo  \
+  rsync && \
   apt-get clean && \
   echo "dash dash/sh boolean false" | debconf-set-selections && \
   DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
