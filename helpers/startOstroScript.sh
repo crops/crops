@@ -20,7 +20,9 @@ chmod a+rwx /ostro/ostro-shared/conf
 chmod a+rw  /ostro/ostro-shared/conf/${OSTRO_CONF}
 
 
-# switch into user to build 
+# switch into user to build
 sudo  --user ${H_USER} /ostro/bin/runbitbake.py --pokydir $POKY_DIR --extraconf $EXTRA_CONF -b $BUILD_DIR -t $*
-
+echo "copying images to shared folder"
+CON_DIR=`bitbake -e | egrep "DEPLOY_DIR_IMAGE\="|tr "\=" " " | tr -d "\""| awk '{print $2}'`
+rsync -a ${CON_DIR} /ostro/ostro-shared/images/
 
