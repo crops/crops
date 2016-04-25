@@ -2,7 +2,7 @@
 #
 # Usage:
 #
-# docker build -t crops/ostro:builder -f Dockerfile.ostro .
+# docker build -t crops/ostro:builder -f Dockerfile.ostro ..
 #
 
 FROM crops/ostro:deps
