@@ -15,7 +15,7 @@ RUN  mkdir -p /ostro/bin && \
      chmod -R a+rwx /ostro
 COPY helpers/runbitbake.py /ostro/bin/runbitbake.py
 COPY helpers/startOstroScript.sh /ostro/bin/startOstroScript.sh
-COPY confs/ostro/ostro.conf /ostro/sample-conf/ostro.conf
+COPY confs/ostro/* /ostro/sample-conf/
 
 RUN   chmod +rx /ostro/bin/runbitbake.py && \
       chmod +rx /ostro/bin/startOstroScript.sh && \
