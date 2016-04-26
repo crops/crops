@@ -31,12 +31,12 @@ chmod a+rw  ${EXTRA_CONF}
 
 # switch into user to build
 sudo  --user ${H_USER} /ostro/bin/runbitbake.py --pokydir $POKY_DIR --extraconf $EXTRA_CONF --extralayers $EXTRA_LAYERS -b $BUILD_DIR -t $*
-echo "copying images to shared folder"
 
 # we need to source the bitbake env in order to use the bitbake script to find the images
 cd ${BUILD_DIR}
-source ${POKY_DIR}/oe-init-build-env >> /dev/null
+source ${POKY_DIR}/oe-init-build-env ${BUILD_DIR} >> /dev/null
 CON_DIR=`bitbake -e | egrep "DEPLOY_DIR_IMAGE\="|tr "\=" " " | tr -d "\""| awk '{print $2}'`
-rsync -a ${CON_DIR} /ostro/ostro-shared/images/ > /dev/null 2>&1
+echo "copying images to shared folder from ${CON_DIR}"
+rsync -a ${CON_DIR}/ /ostro/ostro-shared/images/ > /dev/null 2>&1
 
 
