@@ -11,7 +11,7 @@ in its internal table. CODI also redirects CEED requests to the corresponding TU
 
 ## USING CROPS FOR [ZEPHYR OS](https://www.zephyrproject.org/) DEVELOPMENT
 
-Please refer to the [GitHub Wiki](https://github.com/todorez/crops/wiki)
+Please refer to the [GitHub Wiki](https://github.com/crops/crops/wiki)
 
 ## USING CROPS WITH YOUR OWN TOOLCHAIN
 
@@ -70,7 +70,7 @@ Please refer to the [GitHub Wiki](https://github.com/todorez/crops/wiki)
  9. **Run the Zephyr installer and answer "Yes" when prompted to install CEED. Answer "No" to all other questions**
 
   ```
-  curl -kOs https://raw.githubusercontent.com/todorez/crops/master/installers/zephyr-installer.sh && source   ./zephyr-installer.sh
+  curl -kOs https://raw.githubusercontent.com/crops/crops/master/installers/zephyr-installer.sh && source   ./zephyr-installer.sh
   ```
 
  10. **Place your project in the shared workspace**
