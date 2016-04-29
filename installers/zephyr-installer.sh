@@ -135,7 +135,7 @@ if [[ $MY_PLATFORM == $MAC_PLATFORM ]]; then
 
   if [[ ! -f "$MAKE_PATH/make.zephyr" ]]; then
     echo -e "Downloading Zephyr CLI make utility..."
-    curl -s -o $MAKE_PATH/make.zephyr https://raw.githubusercontent.com/todorez/crops/master/scripts/make.zephyr
+    curl -s -o $MAKE_PATH/make.zephyr https://raw.githubusercontent.com/crops/crops/master/scripts/make.zephyr
     chmod 755 $MAKE_PATH/make.zephyr
     echo -e "Done."
   fi
@@ -149,7 +149,7 @@ else
       rm -rf $CEED_EXE
       echo -e "Done"
 
-      git clone https://github.com/todorez/crops.git; cd crops/dockerfiles;
+      git clone https://github.com/crops/crops.git; cd crops/dockerfiles;
       if [[ $MY_PLATFORM == $WIN_PLATFORM ]]; then
         echo -e "\nBuilding CEED executable"
         docker ps -a -q --filter "name=ceed-windows" | awk '{print $1}' | xargs -I {} docker rm -f {}
@@ -179,7 +179,7 @@ else
       echo -e "\nExiting installer. Your install is incomplete."; return 1
     else
       mkdir -p $HOME/.crops/ceed
-      git clone https://github.com/todorez/crops.git; cd crops/dockerfiles;
+      git clone https://github.com/crops/crops.git; cd crops/dockerfiles;
       if [[ $MY_PLATFORM == $WIN_PLATFORM ]]; then
         echo -e "\nBuilding CEED executable"
         docker ps -a -q --filter "name=ceed-windows" | awk '{print $1}' | xargs -I {} docker rm -f {}
