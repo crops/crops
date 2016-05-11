@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DOCKER_EXEC_TTY="docker exec -it"
-CONTAINER=crops-zephyr-0-7-2-src
+CONTAINER=crops-zephyr-0-7-5-src
 GDB_PATH=//opt//zephyr-sdk//sysroots//i686-pokysdk-linux//usr//bin//i586-poky-elf//i586-poky-elf-gdb
 IMAGE=$1
 
