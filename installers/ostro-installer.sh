@@ -90,13 +90,13 @@ if [[ -f "$BITBAKE_WRAPPER" ]]; then
   else
     rm -rf $BITBAKE_WRAPPER
 	  echo -e "Downloading default OSTRO bitbake wrapper"
-    curl -k -s -o $BITBAKE_WRAPPER https://raw.githubusercontent.com/crops/crops/master/scripts/bitbake.ostro
+    docker run --rm --entrypoint=wget -v $HOME/.crops/:$HOME/.crops/ crops/ostro:builder -q -P $HOME/.crops/ https://raw.githubusercontent.com/crops/crops/master/scripts/bitbake.ostro
     chmod 755 $BITBAKE_WRAPPER
     echo -e "Done."
   fi
 else
   echo -e "Downloading OSTRO bitbake wrapper"
-  curl -k -s -o $BITBAKE_WRAPPER https://raw.githubusercontent.com/crops/crops/master/scripts/bitbake.ostro
+  docker run --rm --entrypoint=wget -v $HOME/.crops/:$HOME/.crops/ crops/ostro:builder -q -P $HOME/.crops/ https://raw.githubusercontent.com/crops/crops/master/scripts/bitbake.ostro
   chmod 755 $BITBAKE_WRAPPER
   echo -e "Done."
 fi
