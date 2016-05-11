@@ -8,7 +8,7 @@ fi
 CODI_IMG=crops/codi:latest
 CODI_CONTAINER=codi
 ZEPHYR_IMG=crops/zephyr:latest
-ZEPHYR_CONTAINER=crops-zephyr-0-7-2-src
+ZEPHYR_CONTAINER=crops-zephyr-0-7-5-src
 VM_NAME=default
 CEED_EXE=$HOME/.crops/ceed/ceed
 MAKE_PATH=$HOME/.crops
