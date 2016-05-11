@@ -7,21 +7,21 @@
 #
 # Example:
 #
-# ENV TOOLCHAIN_NAME zephyr-sdk-0.7.2-i686-setup.run
-# ENV TOOLCHAIN_PATH https://nexus.zephyrproject.org/content/repositories/releases/org/zephyrproject/zephyr-sdk/0.7.2-i686/
+# ENV TOOLCHAIN_NAME zephyr-sdk-0.7.5-i686-setup.run
+# ENV TOOLCHAIN_PATH https://nexus.zephyrproject.org/content/repositories/releases/org/zephyrproject/zephyr-sdk/0.7.5-i686/
 #
 # 2) Build your toolchain image with the following command replacing my_tag with your Zephyr's release
 # docker build -t crops/zephyr:my_tag -f Dockerfile.zephyr ../
 #
-# Example for Zephyr SDK 0.7.2:
-# docker build -t crops/zephyr:0.7.2-src -f Dockerfile.zephyr ../
+# Example for Zephyr SDK 0.7.5:
+# docker build -t crops/zephyr:0.7.5-src -f Dockerfile.zephyr ../
 #
 
 FROM crops/zephyr:deps
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
 
-ENV TOOLCHAIN_NAME zephyr-sdk-0.7.2-i686-setup.run
-ENV TOOLCHAIN_PATH https://nexus.zephyrproject.org/content/repositories/releases/org/zephyrproject/zephyr-sdk/0.7.2-i686/
+ENV TOOLCHAIN_NAME zephyr-sdk-0.7.5-i686-setup.run
+ENV TOOLCHAIN_PATH https://nexus.zephyrproject.org/content/repositories/releases/org/zephyrproject/zephyr-sdk/0.7.5-i686/
 
 # Build and install turff
 RUN mkdir -p /usr/local/crops/turff/
