@@ -5,7 +5,10 @@ if [[ "$(basename -- "$0")" == "ostro-installer.sh" ]]; then
   echo -e "\nExample:\nsource $0\n"; exit 1
 fi
 
-OSTRO_IMG=crops/ostro:builder
+if [ "$TAG" != "" ]; then
+    TAG="v1.0.0"
+fi
+OSTRO_IMG=crops/ostrobuilder:${TAG}
 OSTRO_CONTAINER=ostro-builder
 OSTRO_CONF=$HOME/ostro-workspace/shared/conf/ostro.conf
 BITBAKE_WRAPPER=$HOME/.crops/bitbake.ostro
@@ -90,13 +93,13 @@ if [[ -f "$BITBAKE_WRAPPER" ]]; then
   else
     rm -rf $BITBAKE_WRAPPER
 	  echo -e "Downloading default OSTRO bitbake wrapper"
-    docker run --rm --entrypoint=wget -v $HOME/.crops/:$HOME/.crops/ crops/ostro:builder -q -P $HOME/.crops/ https://raw.githubusercontent.com/crops/crops/master/scripts/bitbake.ostro
+    docker run --rm --entrypoint=wget -v $HOME/.crops/:$HOME/.crops/ ${OSTRO_IMG} -q -P $HOME/.crops/ https://raw.githubusercontent.com/crops/crops/master/scripts/bitbake.ostro
     chmod 755 $BITBAKE_WRAPPER
     echo -e "Done."
   fi
 else
   echo -e "Downloading OSTRO bitbake wrapper"
-  docker run --rm --entrypoint=wget -v $HOME/.crops/:$HOME/.crops/ crops/ostro:builder -q -P $HOME/.crops/ https://raw.githubusercontent.com/crops/crops/master/scripts/bitbake.ostro
+  docker run --rm --entrypoint=wget -v $HOME/.crops/:$HOME/.crops/ ${OSTRO_IMG} -q -P $HOME/.crops/ https://raw.githubusercontent.com/crops/crops/master/scripts/bitbake.ostro
   chmod 755 $BITBAKE_WRAPPER
   echo -e "Done."
 fi

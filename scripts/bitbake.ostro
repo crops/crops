@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
+OSTRO_VERSION=v1.0.0
 OSTRO_CONTAINER=ostro-builder
-OSTRO_IMG=crops/ostro:builder
+OSTRO_IMG=crops/ostrobuilder:${OSTRO_VERSION}
 
 DOCKER_CMD="docker run --rm --name $OSTRO_CONTAINER -v `pwd`/ostro-shared:/ostro/ostro-shared --net=host $OSTRO_IMG"
 PARAMS=$1
@@ -9,4 +10,3 @@ PARAMS=$1
 # make sure the shared directory exists
 mkdir -p `pwd`/ostro-shared
 ${DOCKER_CMD} ${PARAMS} || { echo -e "\nCouldn't start $OSTRO_CONTAINER container\n" ; exit 1; }
-

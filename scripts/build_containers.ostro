@@ -11,10 +11,14 @@ set -o pipefail
 #
 # ./scripts/build_containers.ostro
 
+TAG="v1.0.0"
+if [ "$1" != "" ]; then
+    TAG=$1
+fi
 TOPDIR=`git rev-parse --show-toplevel`
 
 # remove ostro builder image as we will rebuild it
-Q=`docker images  -q crops/ostro:builder`
+Q=`docker images  -q crops/ostrobuilder:${TAG}`
 if [ "$Q"  != "" ]; then
     echo "Removing ostro image"
     docker rmi -f $Q
@@ -27,9 +31,8 @@ if [ "$Q"  == "" ]; then
     echo "Build ostro deps image"
     docker build -t crops/ostro:deps -f Dockerfile.ostro.deps --rm=true ..
 fi
-Q=`docker images  -q crops/ostro:builder`
+Q=`docker images  -q crops/ostrobuilder:${TAG}`
 if [ "$Q"  == "" ]; then
     echo "Build ostro builder image"
-    docker build -t crops/ostro:builder -f Dockerfile.ostro --rm=true ..
+    docker build -t crops/ostrobuilder:${TAG} --build-arg TAG=${TAG} -f Dockerfile.ostro --rm=true ..
 fi
-
