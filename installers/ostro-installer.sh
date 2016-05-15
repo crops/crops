@@ -5,7 +5,7 @@ if [[ "$(basename -- "$0")" == "ostro-installer.sh" ]]; then
   echo -e "\nExample:\nsource $0\n"; exit 1
 fi
 
-if [ "$TAG" != "" ]; then
+if [ "$TAG" = "" ]; then
     TAG="v1.0.0"
 fi
 OSTRO_IMG=crops/ostrobuilder:${TAG}
