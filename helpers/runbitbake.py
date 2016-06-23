@@ -131,6 +131,7 @@ if __name__ == '__main__':
             addextra(tempdir, builddir, "local.conf", args.extraconf)
             addextra(tempdir, builddir, "bblayers.conf", args.extralayers)
 
+            cmd = 'export LANG=en_US.UTF-8 && '
             cmd = '. {}/oe-init-build-env {} && '.format(args.pokydir,
                                                          builddir)
             cmd += 'exec bitbake {}'.format(args.target)
