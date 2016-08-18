@@ -122,8 +122,8 @@ if __name__ == '__main__':
 
     # Have to use bash since the default on ubuntu is dash which is garbage
     try:
-        cmd = 'bash -c ". {}/oe-init-build-env {}"'.format(args.pokydir,
-                                                           builddir)
+        cmd = 'bash -i -c ". {}/oe-init-build-env {}"'.format(args.pokydir,
+                                                              builddir)
         subprocess.check_call(cmd, stdout=sys.stdout, stderr=sys.stderr,
                               shell=True)
 
@@ -131,10 +131,11 @@ if __name__ == '__main__':
             addextra(tempdir, builddir, "local.conf", args.extraconf)
             addextra(tempdir, builddir, "bblayers.conf", args.extralayers)
 
+            cmd = 'export LANG=en_US.UTF-8 && '
             cmd = '. {}/oe-init-build-env {} && '.format(args.pokydir,
                                                          builddir)
             cmd += 'exec bitbake {}'.format(args.target)
-            bitbake_process = subprocess.Popen(['/bin/bash', '-c', cmd],
+            bitbake_process = subprocess.Popen(['/bin/bash', '-i', '-c', cmd],
                                                stdout=sys.stdout,
                                                stderr=sys.stderr, shell=False)
             bitbake_process.wait()
