@@ -40,19 +40,20 @@ Please refer to the [GitHub Wiki](https://github.com/crops/crops/wiki)
   docker build -t crops/toolchain:deps -f Dockerfile.toolchain.deps .
   ```
 
- 5. **Open the Dockerfile.toolchain file and provide the URL to your toolchain**
+ 5. **Open Dockerfile.toolchain-local and provide the name of your toolchain**
 
   Example:
 
   ```
   ENV TOOLCHAIN_NAME poky-glibc-x86_64-core-image-sato-i586-toolchain-2.0.sh
-  ENV TOOLCHAIN_PATH http://downloads.yoctoproject.org/releases/yocto/yocto-2.0/toolchain/x86_64/
   ```
+
+  Also, copy the toolchain to this project's top-level directory.
 
  6. **Build your toolchain container**
 
   ```
-  docker build -t crops/toolchain:my_toolchain -f Dockerfile.toolchain ../
+  docker build -t crops/toolchain:my_toolchain -f Dockerfile.toolchain-local ../
   ```
 
  7. **Start CODI container**
