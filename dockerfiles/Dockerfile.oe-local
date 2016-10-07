@@ -1,4 +1,4 @@
-# This file describes the standard way to build a CROPS yocto-based toolchain
+# This file describes the standard way to build a CROPS OE-based toolchain
 # image from a local SDK
 #
 # Usage:
@@ -9,16 +9,16 @@
 #      Example:
 #        ENV TOOLCHAIN_NAME oecore-x86_64-aarch64-toolchain-nodistro.0.sh
 #
-# 2) Make sure to place your yocto-generated toolchain in the top-level
+# 2) Make sure to place your OE-generated toolchain in the top-level
 #    directory of this project
 #
 # 3) Build your toolchain image with the following command replacing ver
 #    with a version string that is significant to you
 #
 #      Example:
-#        # docker build -t crops/toolchain:ver -f Dockerfile.yocto-local ../
+#        # docker build -t crops/toolchain:ver -f Dockerfile.oe-local ../
 
-FROM crops/toolchain:deps
+FROM crops/oe:deps
 MAINTAINER Trevor Woerner <twoerner@gmail.com>
 
 #ENV TOOLCHAIN_NAME oecore-x86_64-aarch64-toolchain-nodistro.0.sh

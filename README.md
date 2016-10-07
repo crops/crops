@@ -110,7 +110,7 @@ in its internal table. CODI also redirects CEED requests to the corresponding TU
    Execute the following command from within the dockerfiles directory:
 
    <pre>
-   $ <b>docker build -t crops/toolchain:deps -f Dockerfile.toolchain.deps .</b>
+   $ <b>docker build -t crops/oe:deps -f Dockerfile.oe.deps .</b>
    Sending build context to Docker daemon 17.92 kB
    Step 1 : FROM debian:wheezy
     ---> d465a57cd01b
@@ -139,7 +139,7 @@ in its internal table. CODI also redirects CEED requests to the corresponding TU
    Successfully built 58185aafd647
    </pre>
 
-1. Open Dockerfile.toolchain-local and provide the name of your toolchain
+1. Open Dockerfile.oe-local and provide the name of your toolchain
 
    Example:
 
@@ -158,11 +158,11 @@ in its internal table. CODI also redirects CEED requests to the corresponding TU
    (replace &lt;ver> with something significant to you)
 
    <pre>
-   $ <b>docker build -t crops/toolchain:&lt;ver> -f Dockerfile.toolchain-local ..</b>
+   $ <b>docker build -t crops/toolchain:&lt;ver> -f Dockerfile.oe-local ..</b>
    </pre>
    ```
    Sending build context to Docker daemon 168.9 MB
-   Step 1 : FROM crops/toolchain:deps
+   Step 1 : FROM crops/oe:deps
     ---> 58185aafd647
    Step 2 : MAINTAINER Trevor Woerner <twoerner@gmail.com>
     ---> Running in ca1957ffe7c2
@@ -236,7 +236,7 @@ in its internal table. CODI also redirects CEED requests to the corresponding TU
 1. Start toolchain container
 
    <pre>
-   $ <b>docker run -d --name my_toolchain -v $HOME/crops-workspace/:/crops/ --env TURFFID=my_toolchain --net=host crops/toolchain:&lt;ver></b>
+   $ <b>docker run -d --name my_toolchain -v $HOME/crops-workspace/:/crops/ --env TURFFID=my_toolchain --net=host crops/oe:&lt;ver></b>
    d648cf6d950c5478c2459a6c9f3e2e1d8f5878361b5e61524b023fd5f642e902
    </pre>
 
@@ -292,5 +292,5 @@ in its internal table. CODI also redirects CEED requests to the corresponding TU
 
    Example:
    <pre>
-   $ <b>docker push crops/toolchain:&lt;ver></b>
+   $ <b>docker push crops/oe:&lt;ver></b>
    </pre>
