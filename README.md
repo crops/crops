@@ -15,10 +15,6 @@ Development Environments (IDEs) or CLI callers
 * **CODI** - COntainer DIspatcher runs in a container and keeps track of all available TURFF instances
 in its internal table. CODI also redirects CEED requests to the corresponding TURFF instance
 
-## USING CROPS FOR [ZEPHYR OS](https://www.zephyrproject.org/) DEVELOPMENT
-
-Please refer to the [GitHub Wiki](https://github.com/crops/crops/wiki)
-
 ## USING CROPS WITH YOUR OWN TOOLCHAIN
 
 1. Install [Docker (Linux)](https://docs.docker.com/linux/step_one/) or [Docker Toolbox (Windows/Mac)](https://www.docker.com/products/docker-toolbox)
@@ -298,62 +294,3 @@ Please refer to the [GitHub Wiki](https://github.com/crops/crops/wiki)
    <pre>
    $ <b>docker push crops/toolchain:&lt;ver></b>
    </pre>
-
-## CONTRIBUTING TO CROPS
-
-#### COMPILE CEED, TURFF AND CODI ON LINUX
-
-**Required Prerequisites**
-
-* **libsqlite3-dev** - "SQLite is a C library that implements an SQL database engine."
-* **libcurl4-openssl-dev (7.40 or later)** - "libcurl is an easy-to-use client-side URL transfer library, supporting DICT, FILE, FTP, FTPS, GOPHER, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMTP, SMTPS, TELNET and TFTP."
-* **libjansson-dev** - "Jansson is a C library for encoding, decoding and manipulating JSON data."
-
-
-1. Install Prerequisites On Debian / Ubuntu
-
-   <pre>
-   # <b>apt-get install libsqlite3-dev libcurl4-openssl-dev libjansson-dev</b>
-   </pre>
-
-1. Compile
-
-   * GCC
-
-      <pre>
-      $ <b>CC=gcc make all</b>
-      </pre>
-
-   * CLANG
-
-      <pre>
-      $ <b>CC=clang make all</b>
-      </pre>
-
-1. Debug Compile
-
-   * GCC
-
-      <pre>
-      $ <b>CC=gcc make debug</b>
-      </pre>
-
-   * CLANG
-
-      <pre>
-      $ <b>CC=clang make debug</b>
-      </pre>
-
-#### RUNNING A CLANG STATIC ANALYSYS
-
-1. Run the static analyzer
-
-    <pre>
-    $ <b>scan-build -V make</b>
-    </pre>
-
-1. Point your browser at the following URL to view the static analysis results
-
-    ```
-    http://127.0.0.1:8181
-    ```
