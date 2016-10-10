@@ -15,9 +15,150 @@ Development Environments (IDEs) or CLI callers
 * **CODI** - COntainer DIspatcher runs in a container and keeps track of all available TURFF instances
 in its internal table. CODI also redirects CEED requests to the corresponding TURFF instance
 
-## USING CROPS WITH YOUR OWN TOOLCHAIN
+# Using CROPS With Your Own OE-Generated Toolchain
+
+#### Preparation
 
 1. Install [Docker (Linux)](https://docs.docker.com/linux/step_one/) or [Docker Toolbox (Windows/Mac)](https://www.docker.com/products/docker-toolbox)
+
+1. Yocto/OE Preparation
+
+   Following the information in the [Yocto Quick Start Guide](http://www.yoctoproject.org/docs/latest/yocto-project-qs/yocto-project-qs.html#the-linux-distro)
+   install the necessary packages on your host in order to work with OE.
+
+#### OE Image and SDK
+
+1. Clone
+
+   <pre>
+   $ <b>mkdir -p ~/crops/oe</b>
+   $ <b>cd ~/crops/oe</b>
+   </pre>
+
+   openembedded-core:
+
+   <pre>
+   $ <b>git clone git://git.openembedded.org/openembedded-core</b>
+   Cloning into 'openembedded-core'...
+   remote: Counting objects: 265969, done.
+   remote: Compressing objects: 100% (70100/70100), done.
+   remote: Total 265969 (delta 191164), reused 265703 (delta 190964)
+   Receiving objects: 100% (265969/265969), 94.12 MiB | 1.30 MiB/s, done.
+   Resolving deltas: 100% (191164/191164), done.
+   Checking connectivity... done.
+   </pre>
+
+   bitbake:
+
+   <pre>
+   $ <b>git clone git://git.openembedded.org/bitbake</b>
+   remote: Counting objects: 45963, done.
+   remote: Compressing objects: 100% (10491/10491), done.
+   remote: Total 45963 (delta 34350), reused 45558 (delta 34037)
+   Receiving objects: 100% (45963/45963), 9.87 MiB | 2.66 MiB/s, done.
+   Resolving deltas: 100% (34350/34350), done.
+   Checking connectivity... done.
+   </pre>
+
+1. Source the OE Build Script
+
+   <pre>
+   $ <b>. openembedded-core/oe-init-build-env build bitbake/</b>
+    You had no conf/local.conf file. This configuration file has therefore been
+    created for you with some default values. You may wish to edit it to, for
+    example, select a different MACHINE (target hardware). See conf/local.conf
+    for more information as common configuration options are commented.
+    
+    You had no conf/bblayers.conf file. This configuration file has therefore been
+    created for you with some default values. To add additional metadata layers
+    into your configuration please add entries to conf/bblayers.conf.
+    
+    The Yocto Project has extensive documentation about OE including a reference
+    manual which can be found at:
+        http://yoctoproject.org/documentation
+    
+    For more information about OpenEmbedded see their website:
+        http://www.openembedded.org/
+    
+    ### Shell environment set up for builds. ###
+    
+    You can now run 'bitbake <target>'
+    
+    Common targets are:
+        core-image-minimal
+        core-image-sato
+        meta-toolchain
+        meta-ide-support
+    
+    You can also run generated qemu images with a command like 'runqemu qemux86'
+   </pre>
+
+1. Build Image
+
+   <pre>
+   $ <b>MACHINE=qemuarm64 bitbake core-image-full-cmdline</b>
+   Parsing recipes: 100% |####################| Time: 0:00:07
+   Parsing of 863 .bb files complete (0 cached, 863 parsed). 1316 targets, 86 skipped, 0 masked, 0 errors.
+   NOTE: Resolving any missing task queue dependencies
+
+   Build Configuration:
+   BB_VERSION        = "1.31.2"
+   BUILD_SYS         = "x86_64-linux"
+   NATIVELSBSTRING   = "SUSELINUX-42.1"
+   TARGET_SYS        = "aarch64-oe-linux"
+   MACHINE           = "qemuarm64"
+   DISTRO            = "nodistro"
+   DISTRO_VERSION    = "nodistro.0"
+   TUNE_FEATURES     = "aarch64"
+   TARGET_FPU        = ""
+   meta              = "master:4a1c04c0d509b2cda9b2ccd5a80523c05fa279c6"
+   
+   Initialising tasks: 100% |####################| Time: 0:00:04
+   NOTE: Executing SetScene Tasks
+   NOTE: Executing RunQueue Tasks
+   NOTE: Tasks Summary: Attempted 2664 tasks of which 11 didn't need to be rerun and all succeeded.
+   </pre>
+
+1. Build SDK
+
+   <pre>
+   $ <b>MACHINE=qemuarm64 bitbake core-image-full-cmdline -c populate_sdk</b>
+   Loading cache: 100% |####################| Time: 0:00:00
+   Loaded 1316 entries from dependency cache.
+   NOTE: Resolving any missing task queue dependencies
+
+   Build Configuration:
+   BB_VERSION        = "1.31.2"
+   BUILD_SYS         = "x86_64-linux"
+   NATIVELSBSTRING   = "SUSELINUX-42.1"
+   TARGET_SYS        = "aarch64-oe-linux"
+   MACHINE           = "qemuarm64"
+   DISTRO            = "nodistro"
+   DISTRO_VERSION    = "nodistro.0"
+   TUNE_FEATURES     = "aarch64"
+   TARGET_FPU        = ""
+   meta              = "master:4a1c04c0d509b2cda9b2ccd5a80523c05fa279c6"
+
+   Initialising tasks: 100% |####################| Time: 0:00:04
+   NOTE: Executing SetScene Tasks
+   NOTE: Executing RunQueue Tasks
+   NOTE: Tasks Summary: Attempted 2854 tasks of which 1993 didn't need to be rerun and all succeeded.
+   </pre>
+
+#### CROPS Containers
+
+1. Checkout CROPS Project
+
+   <pre>
+   $ <b>cd ~/crops</b>
+   $ <b>git clone https://github.com/twoerner/crops</b>
+   Cloning into 'crops'...
+   remote: Counting objects: 688, done.
+   remote: Total 688 (delta 0), reused 0 (delta 0), pack-reused 688
+   Receiving objects: 100% (688/688), 133.82 KiB | 69.00 KiB/s, done.
+   Resolving deltas: 100% (406/406), done.
+   $ <b>cd crops/dockerfiles</b>
+   </pre>
 
 1. Build CODI dependencies container
 
@@ -150,7 +291,7 @@ in its internal table. CODI also redirects CEED requests to the corresponding TU
    Also, copy the toolchain to this project's top-level directory.
 
    <pre>
-   $ <b>cp /some/where/oecore-x86_64-aarch64-toolchain-nodistro.0.sh ..</b>
+   $ <b>cp ~/crops/oe/build/tmp-glibc/deploy/sdk/oecore-x86_64-aarch64-toolchain-nodistro.0.sh ~/crops/crops</b>
    </pre>
 
 1. Build your toolchain container
@@ -245,6 +386,7 @@ in its internal table. CODI also redirects CEED requests to the corresponding TU
    From the top-level directory, change into the "ceed" directory and:
 
    <pre>
+   $ <b>cd ~/crops/ceed</b>
    $ <b>make</b>
    cc -c -o ceed.o ceed.c -g -I. -I../
    cc -c -o ceed_api.o ceed_api.c -g -I. -I../
@@ -284,6 +426,194 @@ in its internal table. CODI also redirects CEED requests to the corresponding TU
    <pre>
    $ <b>file ~/crops-workspace/my_project/hello</b>
    ~/crops-workspace/my_project/hello: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 3.14.0, BuildID[sha1]=811acb3821620ca06f7582317752bdc4dcecbe30, not stripped
+   </pre>
+
+# On-Target Testing
+
+#### Run The Target (qemu)
+
+   Now we're going to test our build results on the target device. For this
+   example, our target is an ARM 64-bit virtual machine running under qemu.
+   The same basic principles apply if your device is real hardware (such as
+   a raspberrypi, minnow, dragonboard, etc).
+
+   Make sure to run the following from the exact same terminal that performed
+   the OE build above. If you have closed the build terminal, simply perform
+   all the following steps, otherwise you can skip the first 2 steps:
+
+   <pre>
+   $ <b>cd ~/crops/oe</b>
+   $ <b>. openembedded-core/oe-init-build-env build bitbake/</b>
+   </pre>
+   ```
+    
+    ### Shell environment set up for builds. ###
+    
+    You can now run 'bitbake <target>'
+    
+    Common targets are:
+        core-image-minimal
+        core-image-sato
+        meta-toolchain
+        meta-ide-support
+    
+    You can also run generated qemu images with a command like 'runqemu qemux86'
+   ```
+
+   <pre>
+   $ <b>cd ~/crops/oe/build</b>
+   $ <b>runqemu qemuarm64</b>
+   runqemu - INFO - Assuming MACHINE = qemuarm64
+   runqemu - INFO - Running MACHINE=qemuarm64 bitbake -e...
+   runqemu - INFO - MACHINE: qemuarm64
+   runqemu - INFO - DEPLOY_DIR_IMAGE: ~/crops/oe/build/tmp-glibc/deploy/images/qemuarm64
+   runqemu - INFO - Running ls -t ~/crops/oe/build/tmp-glibc/deploy/images/qemuarm64/*.qemuboot.conf...
+   runqemu - INFO - CONFFILE: ~/crops/oe/build/tmp-glibc/deploy/images/qemuarm64/core-image-full-cmdline-qemuarm64-20161005224755.qemuboot.conf
+   runqemu - INFO - Continuing with the following parameters:
+
+   KERNEL: [~/crops/oe/build/tmp-glibc/deploy/images/qemuarm64/Image]
+   MACHINE: [qemuarm64]
+   FSTYPE: [ext4]
+   ROOTFS: [~/crops/oe/build/tmp-glibc/deploy/images/qemuarm64/core-image-full-cmdline-qemuarm64-20161005224755.rootfs.ext4]
+   CONFFILE: [~/crops/oe/build/tmp-glibc/deploy/images/qemuarm64/core-image-full-cmdline-qemuarm64-20161005224755.qemuboot.conf]
+
+   runqemu - INFO - Running /bin/ip link...
+   runqemu - INFO - Setting up tap interface under sudo
+   root's password: <b><i>enter your host's root password</i></b>
+   runqemu - INFO - Acquiring lockfile /tmp/qemu-tap-locks/tap0.lock...
+   runqemu - INFO - Created tap: tap0
+   runqemu - INFO - Running ldd ~/crops/oe/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/qemu-system-aarch64...
+   runqemu - INFO - Running ~/crops/oe/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/qemu-system-aarch64 -netdev tap,id=net0,ifname=tap0,script=no,downscript=no -device virtio-net-device,netdev=net0,mac=52:54:00:12:34:02  -nographic -machine virt -cpu cortex-a57 -m 512 -drive id=disk0,file=~/crops/oe/build/tmp-glibc/deploy/images/qemuarm64/core-image-full-cmdline-qemuarm64-20161005224755.rootfs.ext4,if=none,format=raw -device virtio-blk-device,drive=disk0 -show-cursor -device virtio-rng-pci -kernel ~/crops/oe/build/tmp-glibc/deploy/images/qemuarm64/Image -append 'root=/dev/vda rw highres=off  console=ttyS0 mem=512M ip=192.168.7.2::192.168.7.1:255.255.255.0 console=ttyAMA0,38400'
+   [    0.000000] Booting Linux on physical CPU 0x0
+   [    0.000000] Linux version 4.8.0-yocto-standard (trevor@openSUSE-i7) (gcc version 6.2.0 (GCC) ) #1 SMP PREEMPT Wed Oct 5 19:25:49 EDT 2016
+   [    0.000000] Boot CPU: AArch64 Processor [411fd070]
+   [    0.000000] Memory limited to 512MB
+   [    0.000000] efi: Getting EFI parameters from FDT:
+   [    0.000000] efi: UEFI not found.
+   [    0.000000] psci: probing for conduit method from DT.
+   [    0.000000] psci: PSCIv0.2 detected in firmware.
+   [    0.000000] psci: Using standard PSCI v0.2 function IDs
+   [    0.000000] psci: Trusted OS migration not required
+   [    0.000000] percpu: Embedded 20 pages/cpu @ffffffc01ffd5000 s41624 r8192 d32104 u81920
+   [    0.000000] Detected PIPT I-cache on CPU0
+   ...
+   <i>...lots of output later, typical Linux bootup...</i>
+   ...
+   [    3.553343] EXT4-fs (vda): couldn't mount as ext3 due to feature incompatibilities
+   [    3.556334] EXT4-fs (vda): couldn't mount as ext2 due to feature incompatibilities
+   [    3.596300] EXT4-fs (vda): mounted filesystem with ordered data mode. Opts: (null)
+   [    3.597108] VFS: Mounted root (ext4 filesystem) on device 253:0.
+   [    3.633784] devtmpfs: mounted
+   [    3.686902] Freeing unused kernel memory: 640K (ffffffc000860000 - ffffffc000900000)
+   INIT: version 2.88 booting
+   Error opening /dev/fb0: No such file or directory
+   Starting udev
+   [    5.342397] random: fast init done
+   udev: Not using udev cache because of changes detected in the following files:
+   udev:     /proc/version /proc/cmdline /proc/devices
+   udev:     lib/udev/rules.d/* etc/udev/rules.d/*
+   udev: The udev cache will be regenerated. To identify the detected changes,
+   udev: compare the cached sysconf at   /etc/udev/cache.data
+   udev: against the current sysconf at  /dev/shm/udev.cache
+   [    6.183398] udevd[107]: starting version 3.2
+   [    6.322232] udevd[108]: starting eudev-3.2
+   [    7.975437] EXT4-fs (vda): re-mounted. Opts: (null)
+   Populating dev cache
+   INIT: Entering runlevel: 5
+   Configuring network interfaces... done.
+   Starting system message bus: dbus.
+   Starting OpenBSD Secure Shell server: sshd
+   done.
+   Starting rpcbind daemon...done.
+   starting statd: done
+   Starting atd: OK
+   exportfs: can't open /etc/exports for reading
+   [   16.952733] Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+   starting 8 nfsd kernel threads: [   17.440121] NFSD: Using /var/lib/nfs/v4recovery as the NFSv4 state recovery directory
+   [   17.442080] NFSD: starting 90-second grace period (net ffffff800899e700)
+   done
+   starting mountd: done
+   Starting system log daemon...0
+   Starting kernel log daemon...0
+   Starting crond: OK
+   
+   OpenEmbedded nodistro.0 qemuarm64 /dev/ttyAMA0
+   
+   qemuarm64 login: root
+   root@qemuarm64:~#
+   </pre>
+
+#### Copy Build Artifacts to Target
+
+1. Target IP
+
+   On your target device, identify its IP address (in this example case
+   the target's IP is <i>192.168.7.2</i>):
+
+   <pre>
+   root@qemuarm64:~# <b>ifconfig</b>
+   eth0      Link encap:Ethernet  HWaddr 52:54:00:12:34:02
+             inet addr:192.168.7.2  Bcast:192.168.7.255  Mask:255.255.255.0
+             inet6 addr: fe80::5054:ff:fe12:3402/64 Scope:Link
+             UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+             RX packets:29 errors:0 dropped:0 overruns:0 frame:0
+             TX packets:9 errors:0 dropped:0 overruns:0 carrier:0
+             collisions:0 txqueuelen:1000
+             RX bytes:7515 (7.3 KiB)  TX bytes:738 (738.0 B)
+   
+   lo        Link encap:Local Loopback
+             inet addr:127.0.0.1  Mask:255.0.0.0
+             inet6 addr: ::1/128 Scope:Host
+             UP LOOPBACK RUNNING  MTU:65536  Metric:1
+             RX packets:2 errors:0 dropped:0 overruns:0 frame:0
+             TX packets:2 errors:0 dropped:0 overruns:0 carrier:0
+             collisions:0 txqueuelen:1
+             RX bytes:140 (140.0 B)  TX bytes:140 (140.0 B)
+   </pre>
+
+1. Copy Artifacts
+
+   On your host, check your networking configuration, you should have a
+   <i>tap0</i> device as follows:
+
+   <pre>
+   $ <b>ifconfig</b>
+   ...
+   <i>...other network interfaces' output...</i>
+   ...
+   tap0      Link encap:Ethernet  HWaddr B6:FC:C4:3C:FA:A3
+             inet addr:192.168.7.1  Bcast:192.168.7.255  Mask:255.255.255.255
+             inet6 addr: fe80::b4fc:c4ff:fe3c:faa3/64 Scope:Link
+             UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+             RX packets:10 errors:0 dropped:0 overruns:0 frame:0
+             TX packets:79 errors:0 dropped:0 overruns:0 carrier:0
+             collisions:0 txqueuelen:500
+             RX bytes:828 (828.0 b)  TX bytes:16866 (16.4 Kb)
+   ...
+   <i>...other network interfaces' output...</i>
+   ...
+   </pre>
+
+   Now copy your cross-compiled artifact to the target:
+
+   <pre>
+   $ <b>scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ~/crops-workspace/my_project/hello root@192.168.7.2:</b>
+   Warning: Permanently added '192.168.7.2' (ECDSA) to the list of known hosts.
+   hello                                          100%   14KB  13.7KB/s   00:00
+   </pre>
+
+1. Test
+
+   Back on the target:
+   
+   <pre>
+   root@qemuarm64:~# <b>./hello</b>
+   Hello, world!
+
+   root@qemuarm64:~# <b>/lib/ld-linux-aarch64.so.1 --list ./hello</b>
+           linux-vdso.so.1 (0x0000007faaa84000)
+           libc.so.6 => /lib/libc.so.6 (0x0000007faa937000)
+           /lib/ld-linux-aarch64.so.1 (0x000000557dbf1000)
    </pre>
 
 # Optional
