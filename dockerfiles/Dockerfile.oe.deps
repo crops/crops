@@ -3,7 +3,7 @@
 #
 # Usage:
 #
-# docker build -t crops/toolchain:deps -f Dockerfile.toolchain.deps .
+# docker build -t crops/toolchain:deps -f Dockerfile.oe.deps .
 
 FROM debian:wheezy
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
