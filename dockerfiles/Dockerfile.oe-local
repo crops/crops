@@ -34,7 +34,7 @@ RUN mkdir -p /usr/local/crops/turff/
 COPY turff /usr/local/crops/turff/
 COPY utils.[ch] /usr/local/crops/
 COPY globals.[ch] /usr/local/crops/
-COPY $TOOLCHAIN_NAME /tmp
+COPY sdk/$TOOLCHAIN_NAME /tmp
 
 RUN cd /usr/local/crops/turff && \
 	make && \
